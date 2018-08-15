@@ -13,3 +13,8 @@ Next, we will walk through how we will develop visualization applications for th
 * Refresh the webpage, and you will see your responses, with some d3 flair. To prove that you actually did this, please take a screenshot of your browser, and save the image to the `assignment0` directory.
 * Zip up the `assignment0` directory, and submit it to Brightspace.
 
+## Grading Criteria
+
+* Clone GitHub repository (30%)
+* Provide answers for questionnaire (35%)
+* Take screenshot of resulting webpage (35%)
