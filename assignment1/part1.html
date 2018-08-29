@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 1 - D3 Workout Pt. 1</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+		<svg width="1200" height="1200">
+			<rect id="backgroundrect" x="0" y="0" width="1200" height="1200"></rect>
+			<rect class="bar" x="29" y="613" width="31" height="587"></rect>
+			<rect class="bar" x="102" y="613" width="37" height="587"></rect>
+			<rect class="bar" x="197" y="619" width="45" height="581"></rect>
+			<rect class="bar" x="292" y="650" width="56" height="550"></rect>
+			<rect class="bar" x="398" y="702" width="47" height="498"></rect>
+			<rect class="bar" x="503" y="722" width="34" height="478"></rect>
+			<rect class="bar" x="570" y="793" width="54" height="407"></rect>
+			<rect class="bar" x="679" y="809" width="47" height="391"></rect>
+			<rect class="bar" x="811" y="814" width="29" height="386"></rect>
+			<rect class="bar" x="905" y="822" width="28" height="378"></rect>
+			<rect class="bar" x="1016" y="787" width="58" height="413"></rect>
+			<rect class="bar" x="1123" y="712" width="58" height="488"></rect>
+			<rect id="mainbox" x="24" y="444" width="119" height="135"></rect>
+			<g class="maingroup">
+				<circle class="outer" cx="702.6" cy="769" r="20.4"></circle>
+				<circle class="inner" cx="702.6" cy="769" r="8.4"></circle>
+			</g>
+			<g class="leftgroup" transform="translate(70,507)">
+				<circle class="outer" r="23"></circle>
+				<circle class="inner" r="11"></circle>
+			</g>
+			<g class="rightgroup" transform="translate(104.5,507)">
+				<circle class="outer" r="21"></circle>
+				<circle class="inner" r="8.4"></circle>
+			</g>
+		</svg>
+
+	<script type='text/javascript'>
+	{
+		var bg_color = '#ed8369';
+		var black_color = '#000000';
+		var bar_color_1 = '#ffecbf';
+		var bar_color_2 = '#e2ca9e';
+
+		// TODO: assign `rect` with id "backgroundrect" a fill of `bg_color`
+
+		// TODO: assign all `rect`s with class "bar" a fill of `bar_color_1` if the i'th bar is even, and `bar_color_2` if the i'th bar is odd
+
+		// TODO: assign `rect` with id "mainbox" a fill of `black_color`
+
+		// TODO: assign `circle` with class "outer", and whose parent is the group element with class "maingroup", a fill of `black_color`
+		// TODO: assign `circle` with class "inner", and whose parent is the group element with class "maingroup", a fill of `bg_color`
+
+		// NOTE: for each selection below, the transformation should be achieved with a single selection that specifies multiple class selectors
+		// TODO: assign `circle` with class "outer", and whose parent is the group element with class "leftgroup" or "rightgroup", a fill of `bg_color`
+		// TODO: assign `circle` with class "inner", and whose parent is the group element with class "leftgroup" or "rightgroup", a fill of `black_color`
+
+		// Q: Does the resulting visualization depend on the order in which we select elements and supply fill colors? Why or why not?
+		// A: 
+	}
+	</script>
+
+	</body>
+</html>
