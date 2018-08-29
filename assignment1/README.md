@@ -2,7 +2,7 @@
 
 This assignment is a D3 Workout of sorts. You will be using D3 to create a visualization using basic shapes and styling of these shapes. The objective is to produce the following static image through your visualization:
 
-![alt text](https://github.com/matthewberger/vis-fall2018-assignments/tree/master/assignment1/decline.jpg "Target Visualization")
+![alt text](https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment1/decline.jpg "Target Visualization")
 
 There are two parts to the assignment, both of which have the same objective: produce the above image. First, kick off a local web server via python, in the top-level directory (**vis-fall2018-assignments**), the same way you did in the previous assignment.
 
