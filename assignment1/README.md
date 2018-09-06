@@ -30,5 +30,5 @@ Zip up the `assignment1` directory with `part1.html` and `part2.html` completed,
 ### Part 2 - 65%
 
 * 30%: correcty join data and assign element attributes for the background and `bar` data
-* 10%: correcty join data and assign element attributes for the `box` data and `main_circles` data
+* 15%: correcty join data and assign element attributes for the `box` data and `main_circles` data
 * 20%: correcty join data and assign attributes for the `eight_circles` data
