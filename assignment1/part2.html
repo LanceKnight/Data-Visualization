@@ -45,16 +45,36 @@
 		];
 
 		d3.select('body').append('svg').attr('width', '1200').attr('height', '1200');
-
+		d3.select('svg').append('rect')
+				.attr('width', 1200).attr('height', 1200).attr('fill',bg_color);
 		// TODO: create a `rect` with fill `bg_color`, and whose shape matches that of the svg element
-
+		d3.select('svg').selectAll('a').data(bars).enter().append('rect')
+				.attr('fill',(d,i)=>i%2?bar_color_2:bar_color_1)
+				.attr('x',d=>d[0])
+				.attr('y', d=>d[1])
+				.attr('width',d=>d[2])
+				.attr('height',d=>1200-d[1]);
+				
 		// TODO: create `rect`s from the `bars` data, with fill `bar_color_1` when the i'th bar is even and `bar_color_2` if the i'th bar is odd
-
+		d3.select('svg').selectAll('a').data(box).enter().append('rect')
+				.attr('fill', black_color)
+				.attr('x',d=>d[0])
+				.attr('y',d=>d[1])
+				.attr('width',d=>d[2])
+				.attr('height',d=>d[3]);
 		// TODO: create `rect` from the `box` data, with fill `black_color`
-
+		d3.select('svg').selectAll('a').data(main_circles).enter().append('circle')
+				.attr('fill',d=>d[3])
+				.attr('cx',d=>d[0])
+				.attr('cy',d=>d[1])
+				.attr('r',d=>d[2]);
 		// TODO: create `circle`s from `main_circles`, using colors in the data for fill
-
+		var g = d3.select('svg').selectAll('a').data(eight_circles).enter().append('g')
+				.attr('transform', d=>'translate('+d.position[0]+','+d.position[1]+')');
 		// TODO: first create group elements from the outer array, using the position field to define the transformation
+		var d= g.selectAll('a').data(d=>d.children).enter().append('circle')
+				.attr('r',d=>d[0])
+				.attr('fill',d=>d[1]);
 		// then, create a nested selection using the children field to propagate data
 	}
 	</script>
