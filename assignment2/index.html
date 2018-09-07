@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 2 - Plotting Time Series Data</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	    <link rel="stylesheet" type="text/css" href="basictheme.css">
+	</head>
+	<body>
+	<script type='text/javascript' src='interactive_time_series.js'></script>
+	<script type='text/javascript'>
+		is_music_time_series = false;
+		json_filename = is_music_time_series ? 'music_time_series.json' : 'japan_population.json'
+		d3.json(json_filename)
+		  .then(function(data)  {
+			  count_tree = data;
+			  plot_it();
+		  })
+	</script>
+	</body>
+</html>
