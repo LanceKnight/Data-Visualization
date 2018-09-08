@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang='en'>
 	<head>
@@ -81,3 +82,68 @@
 
 	</body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 1 - D3 Workout Pt. 2</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+
+	<script type='text/javascript'>
+	{
+		var bg_color = '#ed8369';
+		var black_color = '#000000';
+		var bar_color_1 = '#ffecbf';
+		var bar_color_2 = '#e2ca9e';
+
+		// each bar is: x,y,width -> the baseline should be at the very bottom
+		var bars = [
+			[29,613,60-29],
+			[102,613,139-102],
+			[197,619,242-197],
+			[292,650,348-292],
+			[398,702,445-398],
+			[503,722,537-503],
+			[570,793,624-570],
+			[679,809,726-679],
+			[811,814,840-811],
+			[905,822,933-905],
+			[1016,787,1074-1016],
+			[1123,712,1181-1123]
+		];
+
+		var box = [[24,444,143-24,579-444]]; // x,y,width,height
+
+		// x,y,radius,fill
+		var main_circles = [
+			[702.6,769,20.4,black_color],
+			[702.6,769,8.4,bg_color],
+		];
+
+		// grouped according to left, right: 'position' is where the circles are centered, children formated as [radius,color]
+		var eight_circles = [
+			{'position':[70,507], 'children':[[23,bg_color],[11,black_color]]},
+			{'position':[104.5,507], 'children':[[21,bg_color],[8.4,black_color]]}
+		];
+
+		d3.select('body').append('svg').attr('width', '1200').attr('height', '1200');
+
+		// TODO: create a `rect` with fill `bg_color`, and whose shape matches that of the svg element
+
+		// TODO: create `rect`s from the `bars` data, with fill `bar_color_1` when the i'th bar is even and `bar_color_2` if the i'th bar is odd
+
+		// TODO: create `rect` from the `box` data, with fill `black_color`
+
+		// TODO: create `circle`s from `main_circles`, using colors in the data for fill
+
+		// TODO: first create group elements from the outer array, using the position field to define the transformation
+		// then, create a nested selection using the children field to propagate data
+	}
+	</script>
+
+	</body>
+</html>
+>>>>>>> ddccec34d0d8095392dc0a7fe23f1be3d23699a8
