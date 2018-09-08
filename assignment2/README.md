@@ -57,14 +57,14 @@ We will then want to visualize this hierarchy.
 
 You will use line charts to visualize the time series data. In particular, you will visualize particular types of **node subsets** of the hierarchy, where each node in the hierarchy contains a time series. More specifically, a valid subset is one that:
 
-* **Covers all children**: all leaves in the tree can be reached by a path that originates in one of the nodes in the subset (a leaf node in the subset is considered to be already "reached").
+* **Covers all leaves**: all leaves in the tree can be reached by a path that originates in one of the nodes in the subset (a leaf node in the subset is considered to be already "reached").
 * **Excludes ancestors**: two nodes in which one is an ancestor of another cannot belong in the subset.
 
 For any subset that satisfies these conditions, you will plot all of their corresponding time series in one graph. To realize this, you will need:
 
 * `d3.scales` for the x and y axes, as well as `d3.line` to plot each time series.
 * `d3.axis` to show the axes
-* labels to show the axes - in particular, for each time series, you will place a text label on the right side of the graph, whose y-coordinate is assigned that of the time series' (mapped via scale) value at the last date, so that the text label is adjacent to the time series.
+* labels to identify each time series - in particular, for each time series, you will place a text label on the right side of the graph, whose y-coordinate is assigned that of the time series' (mapped via scale) value at the last date, so that the text label is adjacent to the time series.
 
 Moreover, we will want to process any subset of nodes, which means that we must be able to match nodes when we perform data joins. Thus, **keys** should be used when performing data joins, and you may use the `name` property of each node for this purpose.
 
