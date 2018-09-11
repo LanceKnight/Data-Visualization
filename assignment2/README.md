@@ -78,12 +78,12 @@ The time series are organized in this manner to enable interactivity. To this en
 * **Collapse**: when a user performs a `Shift+click` on a time series, it should be replaced by its **parent**. Specifically, the parent time series is added and any node that is a descendant of this parent is removed.
 
 | | |
-| <img width="600" alt="timeseries-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-1.jpg"> | <img width="600" alt="timeseries-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-2.jpg"> |
+| <img width="600" alt="timeseries-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-1.png"> | <img width="600" alt="timeseries-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-2.png"> |
 
 The above shows an example of what your visualization should look like. Given the set of time series on the left, upon clicking on the orange curve, we should see this node's children time series, shown on the right.
 
 | | |
-| <img width="600" alt="timeseries-3" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-3.jpg"> | <img width="600" alt="timeseries-4" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-4.jpg"> |
+| <img width="600" alt="timeseries-3" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-3.png"> | <img width="600" alt="timeseries-4" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-4.png"> |
 
 Similarly, given the time series on the left, should the user press `Shift+click` on any curve with a purple hue, all time series with a purple hue should collapse into their parent, shown on the right.
 
