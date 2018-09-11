@@ -77,6 +77,16 @@ The time series are organized in this manner to enable interactivity. To this en
 * **Expand**: when a user performs a `click` on a time series, it should be replaced by its **direct children**. That is, the current time series is removed, and its children time series are added.
 * **Collapse**: when a user performs a `Shift+click` on a time series, it should be replaced by its **parent**. Specifically, the parent time series is added and any node that is a descendant of this parent is removed.
 
+| | |
+| <img width="600" alt="timeseries-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-1.jpg"> | <img width="600" alt="timeseries-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-2.jpg"> |
+
+The above shows an example of what your visualization should look like. Given the set of time series on the left, upon clicking on the orange curve, we should see this node's children time series, shown on the right.
+
+| | |
+| <img width="600" alt="timeseries-3" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-3.jpg"> | <img width="600" alt="timeseries-4" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-4.jpg"> |
+
+Similarly, given the time series on the left, should the user press `Shift+click` on any curve with a purple hue, all time series with a purple hue should collapse into their parent, shown on the right.
+
 You will need to do two main operations here:
 
 * For a given time series that the user clicked on, you must determine what nodes in the tree to visualize, depending on whether they expand or collapse.
