@@ -166,7 +166,7 @@ function collapse_node_view(node)  {
 }
 
 // TODO: does all of the visualization -> get the time series to view (`collect_viewable_nodes`), data join, setup interactions
-function visualize_time_series(line,root_node, is_collapsing, selected_node)  {
+function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	var node_array = [];
 	collect_viewable_nodes(root_node, node_array);
 
@@ -178,7 +178,7 @@ function visualize_time_series(line,root_node, is_collapsing, selected_node)  {
 		
 	var k = d3.selectAll('svg').append('path').datum(root_node)
 		.attr('class','linechart')
-		.attr('d', d=>line(d))
+		.attr('d', d=>line_scale(d))
 		.attr('fill', 'none')
 		.attr('stroke', d=>d.color)
 		.attr('stroke-width', '3');
@@ -195,7 +195,7 @@ function visualize_time_series(line,root_node, is_collapsing, selected_node)  {
 	// TODO: text labels - add new ones (fade them in via opacity)
 }
 
-
+/*
 function get_count(node, array){
 
 	//console.log(node.name);
@@ -211,7 +211,7 @@ function get_count(node, array){
 	}
 
 	
-}
+}*/
 
 function plot_it()  {
 	// some preprocessing
@@ -244,7 +244,7 @@ function plot_it()  {
 	// TODO: setting up scales: we need to compute the minimum and maximum of our count data and dates; so first, lets get our count data from all nodes, then compute min/max
 	var count_array = [];
 	get_all_count_data(count_tree, count_array);
-	console.log(count_array.length);
+	//console.log(count_array.length);
 	var min_count = d3.min(count_array), max_count = d3.max(count_array);
 	
 	// TODO: for the min/max of dates, they are equivalent across nodes, so just map the root node's dates to an array, compute min and max
@@ -252,20 +252,20 @@ function plot_it()  {
 	for(var i = 0;i<count_tree.counts.length;i++){
 		date_array.push(count_tree.counts[i].date);
 	}
-	console.log(date_array);
+	//console.log(date_array);
 	var min_date= d3.min(date_array), max_date = d3.max(date_array);
 	
 	// TODO: compute the x and y scales for the line plots
 	var min_x = 0, max_x = width, min_y = height, max_y = 0;
 
 	// TODO: setup the line scale
-	var scale_date = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
-	var scale_count = d3.scaleLinear().domain([min_count, max_count]).range([min_y, max_y]);
-	var line = d3.line()
+	x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
+	y_scale = d3.scaleLinear().domain([min_count, max_count]).range([min_y, max_y]);
+	line_scale= d3.line()
 		.x(d=>scale_date(d.counts.date))
 		.y(d=>scale_count(d.counts.count));
 	// TODO: setup axes from the scales
 	//d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(scale_count));
 	// visualize data!
-	visualize_time_series(line,count_tree, false);
+	visualize_time_series(count_tree, false);
 }
