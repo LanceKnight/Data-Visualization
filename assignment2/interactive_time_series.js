@@ -120,9 +120,9 @@ function reset_node_views(node)  {
 
 // TODO: traverse tree, adding nodes where `view_series` is set to true to `node_array`
 function collect_viewable_nodes(node, node_array)  {
-//console.log("collect");
+	//console.log("collect: "+node.name+" view_series:"+node.view_series);
 	if(node.view_series == true){
-
+		//console.log(node.name);
 		node_array.push(node);
 
 	}
@@ -138,9 +138,7 @@ function collect_viewable_nodes(node, node_array)  {
 		}
 		
 	}
-	if(node.name == 'Japan'){
-		console.log(node);
-	}
+
 
 }
 
@@ -167,20 +165,23 @@ function collapse_node_view(node)  {
 
 // TODO: does all of the visualization -> get the time series to view (`collect_viewable_nodes`), data join, setup interactions
 function visualize_time_series(root_node, is_collapsing, selected_node)  {
+	
 	var node_array = [];
 	collect_viewable_nodes(root_node, node_array);
-
-	// TODO: data join for line plot
-	console.log(node_array);	
 	
+	// TODO: data join for line plot
+//	console.log("node_array");
+//	console.log(node_array);	
+		
 	var data = []
 	for(var i =0; i< node_array.length;i++){
 		data.push(node_array[i]);
 	}	
-	console.log(data);	
-		var k = d3.selectAll('#mainplot').selectAll('a').data(data)
-		//console.log(k.enter());
-
+	//console.log(data);	
+	//if(selected_node==undefined){
+	var mainplot_selection = d3.selectAll('#mainplot').selectAll('a').data(data)
+//		console.log(mainplot_selection);
+	
 		/*.merge('path')
 				.attr('class','linechart')
 		.attr('d', d=>line_scale(d.counts))
@@ -192,9 +193,17 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 
 	
 	// TODO: remove old series
-	
+	d3.selectAll('path').remove();
+	/*d3.selectAll('path').each(function(d,i,g){
+			console.log("remove:");
+			if(d.view_series==false)
+				console.log(d.name);
+			//	d.remove();
+			
+	});*/
+	mainplot_selection.exit().remove();	
 	// TODO: add new series
-	k.enter().append('path')
+	mainplot_selection.enter().append('path')
 		.attr('class','linechart')
 		.attr('d', d=>line_scale(d.counts))
 		.attr('fill', 'none')
@@ -202,6 +211,24 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		.attr('stroke-width', '3')
 		.attr('key', d=>d.name)
 	// TODO: setup interactions
+	d3.selectAll('path').on('click', function(d,i,g){
+//		console.log(d.name)
+		expand_node_view(d);
+
+		//var new_array=[];
+		//d.view_series= false;
+		//for(var i = 0;i<d.children.length;i++){
+		//	d.children[i].view_series= true;
+		//	new_array.push(d.children[i]);
+		//}
+		
+		//mainplot_selection.enter().data(new_array);
+			visualize_time_series(root_node, false);
+			
+
+	})
+
+	console.log(count_tree);
 
 	// TODO: data join for text
 
@@ -243,7 +270,7 @@ function plot_it()  {
 
 	// ... and then set the root node view to be true (have to view something to start!)
 	count_tree.view_series = true;
-	count_tree.children[0].view_series = true;
+//	count_tree.children[0].view_series = true;
 
 	// visualization setup: width, height, padding, actual width and height
 	var width = 800, height = 800;
