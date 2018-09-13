@@ -48,7 +48,7 @@ function create_color(root_node)  {
 }
 
 // TODO: create a time series for each non-leaf node (`counts`) that aggregates its count data and dates - same format as `counts` in leaves
-var is_mean = false;//Change this flag to toggle between mean and sum;True for sum, False for mean.
+var is_mean = true;//Change this flag to toggle between mean and sum;True for sum, False for mean.
 function aggregate_counts(node)  {
 	//console.log("node_name:" +node.name);
 	
@@ -75,11 +75,15 @@ function aggregate_counts(node)  {
 				date_child_counts = child_counts[i];
 				//console.log("i: "+i + ", c:" + c);
 				population += date_child_counts.count;
+				
 				date = date_child_counts.date;
-				date_data = {count: population, date:date }	
+				
 
 			}//for loop (var c)
-			
+			if(is_mean == false)
+				date_data = {count: population, date:date }	
+			else
+				date_data = {count:population/node.children.length, date:date}	
 			if(flag != false){	
 			
 				node.counts.push(date_data);
