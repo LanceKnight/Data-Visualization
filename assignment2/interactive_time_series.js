@@ -173,21 +173,34 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	// TODO: data join for line plot
 	console.log(node_array);	
 	
-
+	var data = []
 	for(var i =0; i< node_array.length;i++){
-	var data = node_array[i];
-			
-	var k = d3.selectAll('#mainplot').append('path').datum(data)
+		data.push(node_array[i]);
+	}	
+	console.log(data);	
+		var k = d3.selectAll('#mainplot').selectAll('a').data(data)
+		//console.log(k.enter());
+
+		/*.merge('path')
+				.attr('class','linechart')
+		.attr('d', d=>line_scale(d.counts))
+		.attr('fill', 'none')
+		.attr('stroke', d=>d.color)
+		.attr('stroke-width', '3')
+		.attr('key', d=>d.name);*/
+
+
+	
+	// TODO: remove old series
+	
+	// TODO: add new series
+	k.enter().append('path')
 		.attr('class','linechart')
 		.attr('d', d=>line_scale(d.counts))
 		.attr('fill', 'none')
 		.attr('stroke', d=>d.color)
-		.attr('stroke-width', '3');
-	}
-	// TODO: remove old series
-	//console.log(k);
-	// TODO: add new series
-
+		.attr('stroke-width', '3')
+		.attr('key', d=>d.name)
 	// TODO: setup interactions
 
 	// TODO: data join for text
