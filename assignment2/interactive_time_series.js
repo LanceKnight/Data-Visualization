@@ -144,8 +144,8 @@ function collect_viewable_nodes(node, node_array)  {
 
 // TODO: make `node` no longer visible, but its immediate children visible (if a child, nothing to do) - modify `view_series`!
 function expand_node_view(node)  {
-	node.view_series = false;
 	if(node.children.length>0){
+		node.view_series = false;
 		for(var i = 0; i< node.children.length; i++){
 
 			node.children[i].view_series = true;
@@ -157,9 +157,11 @@ function expand_node_view(node)  {
 
 // TODO: make the parent of `node` visible, but the subtree rooted at `node` should not be visible (hint `reset_node_views`) (if a parent, nothing to do) - modify `view_series`!
 function collapse_node_view(node)  {
-
-		node.parent.view_series = true;
-		reset_node_views(node);
+		if (node.parent!=undefined){
+			
+			reset_node_views(node.parent);
+			node.parent.view_series = true;
+		}
 
 }
 
@@ -170,38 +172,17 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	collect_viewable_nodes(root_node, node_array);
 	
 	// TODO: data join for line plot
-//	console.log("node_array");
-//	console.log(node_array);	
-		
+	
 	var data = []
 	for(var i =0; i< node_array.length;i++){
 		data.push(node_array[i]);
 	}	
-	//console.log(data);	
-	//if(selected_node==undefined){
 	var mainplot_selection = d3.selectAll('#mainplot').selectAll('a').data(data)
-//		console.log(mainplot_selection);
-	
-		/*.merge('path')
-				.attr('class','linechart')
-		.attr('d', d=>line_scale(d.counts))
-		.attr('fill', 'none')
-		.attr('stroke', d=>d.color)
-		.attr('stroke-width', '3')
-		.attr('key', d=>d.name);*/
-
 
 	
 	// TODO: remove old series
 	d3.selectAll('path').remove();
-	/*d3.selectAll('path').each(function(d,i,g){
-			console.log("remove:");
-			if(d.view_series==false)
-				console.log(d.name);
-			//	d.remove();
-			
-	});*/
-	mainplot_selection.exit().remove();	
+		
 	// TODO: add new series
 	mainplot_selection.enter().append('path')
 		.attr('class','linechart')
@@ -211,24 +192,36 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		.attr('stroke-width', '3')
 		.attr('key', d=>d.name)
 	// TODO: setup interactions
-	d3.selectAll('path').on('click', function(d,i,g){
-//		console.log(d.name)
-		expand_node_view(d);
-
-		//var new_array=[];
-		//d.view_series= false;
-		//for(var i = 0;i<d.children.length;i++){
-		//	d.children[i].view_series= true;
-		//	new_array.push(d.children[i]);
-		//}
-		
-		//mainplot_selection.enter().data(new_array);
-			visualize_time_series(root_node, false);
+	d3.selectAll('path')
+		.on('click', function(d,i,g){
 			
+			if(is_collapsing == false){	
+			expand_node_view(d);}
+			/*if(is_collapsing == true){
+				console.log("shift click!")
+			}
+			else{
+				console.log("normal click!")
+			}*/
+			else{
+				collapse_node_view(d);
+			}
+			visualize_time_series(root_node, is_collapsing);
+			
+		})
+		d3.selectAll('body').on('keydown', function(d,i,g){
+			if(d3.event.keyCode === 16){
+				console.log("key down");
+				is_collapsing =true;
+			}
+		}).on('keyup',function(){
+			if(d3.event.keyCode===16){
+				console.log("keyup");
+				is_collapsing = false
+			}
+		});
 
-	})
 
-	console.log(count_tree);
 
 	// TODO: data join for text
 
@@ -237,23 +230,6 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	// TODO: text labels - add new ones (fade them in via opacity)
 }
 
-/*
-function get_count(node, array){
-
-	//console.log(node.name);
-	for(var k =0;k<node.counts.length;k++){
-		array.push(node.counts[k].count);
-		}
-
-	if(node.children.length>0){
-		for(var i=0; i<node.children.length;i++){
-		
-			get_count(node.children[i], array);
-		}
-	}
-
-	
-}*/
 
 function plot_it()  {
 	// some preprocessing
