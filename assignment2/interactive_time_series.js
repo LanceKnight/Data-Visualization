@@ -173,15 +173,17 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	// TODO: data join for line plot
 	console.log(node_array);	
 	
-	var data = root_node.counts;
-	
-		
-	var k = d3.selectAll('svg').append('path').datum(root_node)
+
+	for(var i =0; i< node_array.length;i++){
+	var data = node_array[i];
+			
+	var k = d3.selectAll('#mainplot').append('path').datum(data)
 		.attr('class','linechart')
-		.attr('d', d=>line_scale(d))
+		.attr('d', d=>line_scale(d.counts))
 		.attr('fill', 'none')
 		.attr('stroke', d=>d.color)
 		.attr('stroke-width', '3');
+	}
 	// TODO: remove old series
 	//console.log(k);
 	// TODO: add new series
@@ -228,6 +230,7 @@ function plot_it()  {
 
 	// ... and then set the root node view to be true (have to view something to start!)
 	count_tree.view_series = true;
+	count_tree.children[0].view_series = true;
 
 	// visualization setup: width, height, padding, actual width and height
 	var width = 800, height = 800;
@@ -256,14 +259,14 @@ function plot_it()  {
 	var min_date= d3.min(date_array), max_date = d3.max(date_array);
 	
 	// TODO: compute the x and y scales for the line plots
-	var min_x = 0, max_x = width, min_y = height, max_y = 0;
-
-	// TODO: setup the line scale
+	var min_x = 0, max_x = actual_width, min_y = actual_height, max_y = 0;
 	x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
 	y_scale = d3.scaleLinear().domain([min_count, max_count]).range([min_y, max_y]);
+
+	// TODO: setup the line scale
 	line_scale= d3.line()
-		.x(d=>scale_date(d.counts.date))
-		.y(d=>scale_count(d.counts.count));
+		.x(d=>x_scale(d.date))
+		.y(d=>y_scale(d.count));
 	// TODO: setup axes from the scales
 	//d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(scale_count));
 	// visualize data!
