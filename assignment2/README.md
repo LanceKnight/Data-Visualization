@@ -113,7 +113,7 @@ All other considerations regarding streamgraphs: time series ordering, layer lab
 | ------------ | ----------- |
 | <img width="300" alt="streamgraph-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/streamgraph-1.png"> | <img width="300" alt="streamgraph-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/streamgraph-2.png"> |
 
-The above shows an example of what your streamgraph visualization should look like. Each time series is represented as an area. By clicking on an area, e.g. the purple area shown on the left, it will expand that node's children time series, shown on the right.
+The above shows an example of what your streamgraph visualization should look like. Each time series is represented as an area. By clicking on an area, e.g. the purple area shown on the left, it will expand that node's children time series, shown on the right. Analogously, when the user Shift+clicks on a non-root node, the set of time series should collapse.
 
 Try out the two different aggregations: mean and sum. You should now see that it is much easier to perceive summations of time series compared to the above technique of visualizing individual time series, since in the latter we are not rescaling the axes.
 
