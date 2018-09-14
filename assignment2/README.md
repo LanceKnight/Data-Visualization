@@ -109,6 +109,12 @@ There are several important choices to make regarding streamgraphs. Arguably mos
 
 All other considerations regarding streamgraphs: time series ordering, layer labeling, color, you need not worry about. Simply color the areas by the colors you used in the previous part of the assignment. Furthermore, you do not need to address transitions - updates will be instantaneous. But the user should still be able to click on an area to expand, and Shift+click on on area to collapse. Last, text labels need not be animated either, but should be positioned in the center of each time series' area (in the y-axis).
 
+| Before Click | After Click |
+| ------------ | ----------- |
+| <img width="300" alt="streamgraph-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/streamgraph-1.png"> | <img width="300" alt="streamgraph-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/streamgraph-2.png"> |
+
+The above shows an example of what your streamgraph visualization should look like. Each time series is represented as an area. By clicking on an area, e.g. the purple area shown on the left, it will expand that node's children time series, shown on the right.
+
 Try out the two different aggregations: mean and sum. You should now see that it is much easier to perceive summations of time series compared to the above technique of visualizing individual time series, since in the latter we are not rescaling the axes.
 
 ## Hand-in
