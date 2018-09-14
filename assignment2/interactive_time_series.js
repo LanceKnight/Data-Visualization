@@ -65,19 +65,14 @@ function aggregate_counts(node)  {
 			for(c = 0; c < node.children.length; c++){	
 				
 				child_counts = aggregate_counts(node.children[c]);
-				//console.log("i: "+i +", definition:" +child_counts[i]);
-				//console.log(aggregate_counts(node.children[0])[0].date);
 				if(child_counts[i] == undefined){
 					flag = false
 					//console.log('break');
 					break;
 				}
 				date_child_counts = child_counts[i];
-				//console.log("i: "+i + ", c:" + c);
-				population += date_child_counts.count;
-				
+				population += date_child_counts.count;				
 				date = date_child_counts.date;
-				
 
 			}//for loop (var c)
 			if(is_mean == false)
@@ -117,7 +112,7 @@ function reset_node_views(node)  {
 	}
 
 	if(node.name == 'Japan'){
-		console.log(node);
+	//	console.log(node);
 	}
 
 }
@@ -185,9 +180,23 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 
 	
 	// TODO: remove old series
-	d3.selectAll('path').remove();
+	
+	var remove_transition;
+	var add_transition;
+
+	//if(is_collapsing == true){
+		remove_transition = d3.transition().duration(2000);
+		add_transition= d3.transition().duration(2000);
+	//}
+	//else{
+	//	remove_transition = d3.transition().duration(0);
+	//	add_transition= d3.transition().duration(1000);
+	
+	//}
+	d3.selectAll('path').remove();//transition(remove_transition).remove();
 		
 	// TODO: add new series
+
 	mainplot_selection.enter().append('path')
 		.attr('class','linechart')
 		.attr('d', d=>line_scale(d.counts))
@@ -195,6 +204,8 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		.attr('stroke', d=>d.color)
 		.attr('stroke-width', '3')
 		.attr('key', d=>d.name)
+		.merge(mainplot_selection)
+		.transition(add_transition).attr('opacity',1.0);
 	// TODO: setup interactions
 	d3.selectAll('path')
 		.on('click', function(d,i,g){
