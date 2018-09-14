@@ -58,7 +58,7 @@ function aggregate_counts(node)  {
 		var date_data = {count:population, date : ''};
 		var c = 0;
 		var i = 0;
-		var k = 223;
+		var k = 30;
 		var flag = true;
 		for(i=0; (flag == true) && (i< k);i++, population = 0){
 			
@@ -299,8 +299,7 @@ function plot_it()  {
 		.x(d=>x_scale(d.date))
 		.y(d=>y_scale(d.count));
 	// TODO: setup axes from the scales
-	
+	//d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(scale_count));
 	// visualize data!
 	visualize_time_series(count_tree, false);
-	console.log(count_tree);
 }
