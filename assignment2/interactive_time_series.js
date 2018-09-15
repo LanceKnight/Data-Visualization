@@ -48,7 +48,7 @@ function create_color(root_node)  {
 }
 
 // TODO: create a time series for each non-leaf node (`counts`) that aggregates its count data and dates - same format as `counts` in leaves
-var is_mean = true;//Change this flag to toggle between mean and sum;True for sum, False for mean.
+var is_mean = false;//Change this flag to toggle between mean and sum;True for sum, False for mean.
 function aggregate_counts(node)  {
 	//console.log("node_name:" +node.name);
 	
@@ -166,75 +166,66 @@ function collapse_node_view(node)  {
 
 // TODO: does all of the visualization -> get the time series to view (`collect_viewable_nodes`), data join, setup interactions
 function visualize_time_series(root_node, is_collapsing, selected_node)  {
-	
 	var node_array = [];
-	if(selected_node == undefined)
-		collect_viewable_nodes(root_node, node_array);
-	else
-		collect_viewable_nodes(selected_node, node_array);
-	
-		
-	// TODO: data join for line plot
-	
-	var data = []
-	for(var i =0; i< node_array.length;i++){
-		data.push(node_array[i]);
-	}	
-	
-	// TODO: remove old series
-	
-	var remove_transition;
-	var add_transition;
-
-	
-		remove_transition = d3.transition().duration(2000);
-		add_transition= d3.transition().duration(2000);
-	//}
-	//else{
-	//	remove_transition = d3.transition().duration(0);
-	//	add_transition= d3.transition().duration(1000);
-	
-	//}
-	//d3.selectAll('path').remove();//transition(remove_transition).remove();
-	if(is_collapsing == true){
-		console.log("collapsing");
+	if(is_collapsing == true)
 		if(selected_node == undefined)
-			var mainplot_selection = d3.selectAll('#mainplot').selectAll('path').data(data)
+			collect_viewable_nodes(root_node, node_array);
 		else
-			var mainplot_selection = d3.selectAll('#mainplot').selectAll('#'+selected_node.name).data(data);		
-
-		console.log(data)
-	}else{	
-	// TODO: add new series
+			collect_viewable_nodes(selected_node.parent, node_array);
+	else{	
+		if(selected_node !=undefined)
+			collect_viewable_nodes(selected_node, node_array);
+		else
+			collect_viewable_nodes(root_node,node_array);
+	}
+	// TODO: data join for line plot
+	var trans = d3.transition().duration(1000);
+	//console.log(node_array);
 	if(selected_node == undefined)
-		var mainplot_selection = d3.selectAll('#mainplot').selectAll('path').data(data)
+	var	s = d3.selectAll('#mainplot').selectAll('path').data(node_array);	
 	else
-		var mainplot_selection = d3.selectAll('#mainplot').selectAll('#'+selected_node.name).data(data);
-	mainplot_selection.exit().remove();
-	console.log(mainplot_selection);
-	mainplot_selection.enter().append('path')
-		.attr('class','linechart')
-		.attr('d', d=>{
-			if(d.parent !=undefined){
-			console.log("non-root");
-			return line_scale(d.parent.counts)}
-			else{
-			console.log("root");
-			return line_scale(d.counts)}
-			})
+	var	s = d3.selectAll('#mainplot').selectAll('#'+selected_node.name).data(node_array);
+
+	// TODO: remove old series
+	s.exit().transition(trans)
+		.attr('d',d=>{
+				if(selected_node == undefined)
+					return line_scale(d.counts)
+				else
+					return line_scale(d.parent.counts)
+				})
 		.attr('fill', 'none')
 		.attr('stroke', d=>d.color)
 		.attr('stroke-width', '3')
-		.attr('id', d=>d.name)
-		.merge(mainplot_selection)
-			.transition(add_transition)
-			.attr('class','linechart')
-			.attr('d', d=>line_scale(d.counts))
+		.remove()	
+	
+	// TODO: add new series
+	//console.log(s.enter());
+	s.enter().append('path')
+			.attr('d',d=>{
+					if(selected_node == undefined)
+						return line_scale(d.counts)
+					else
+						return line_scale(d.parent.counts)
+				})
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
 			.attr('id', d=>d.name)
-			.attr('opacity',1.0);}
+			.transition(trans)
+			.attr('d',d=>line_scale(d.counts))
+			.attr('fill', 'none')
+			.attr('stroke', d=>d.color)
+			.attr('stroke-width', '3')
+		s.transition(trans)
+			.attr('d',d=>line_scale(d.counts))
+			.attr('fill', 'none')
+			.attr('stroke', d=>d.color)
+			.attr('stroke-width', '3')
+			.attr('id',d=>d.name);
+
+;
+
 	// TODO: setup interactions
 	d3.selectAll('path')
 		.on('click', function(d,i,g){
