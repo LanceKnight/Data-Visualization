@@ -166,6 +166,9 @@ function collapse_node_view(node)  {
 
 // TODO: does all of the visualization -> get the time series to view (`collect_viewable_nodes`), data join, setup interactions
 function visualize_time_series(root_node, is_collapsing, selected_node)  {
+
+		
+
 	var node_array = [];
 	if(is_collapsing == true)
 		if(selected_node == undefined)
@@ -182,12 +185,15 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	var trans = d3.transition().duration(1000);
 	//console.log(node_array);
 	if(selected_node == undefined)
-	var	s = d3.selectAll('#mainplot').selectAll('path').data(node_array);	
-	else
-	var	s = d3.selectAll('#mainplot').selectAll('#'+selected_node.name).data(node_array);
-
+		var s = d3.selectAll('#mainplot').selectAll('path').data(node_array);	
+	else{
+		
+		var s = d3.selectAll('#'+selected_node.name).selectAll('path').data(node_array);
+	}
 	// TODO: remove old series
-	s.exit().transition(trans)
+	
+
+	/*s.exit().transition(trans)
 		.attr('d',d=>{
 				if(selected_node == undefined)
 					return line_scale(d.counts)
@@ -197,11 +203,12 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		.attr('fill', 'none')
 		.attr('stroke', d=>d.color)
 		.attr('stroke-width', '3')
-		.remove()	
+		.remove()*/	
 	
 	// TODO: add new series
 	//console.log(s.enter());
-	s.enter().append('path')
+
+	s.enter().append('g').attr('id',d=>d.name).append('path')
 			.attr('d',d=>{
 					if(selected_node == undefined)
 						return line_scale(d.counts)
@@ -211,18 +218,19 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
-			.attr('id', d=>d.name)
+			.attr('key', d=>d.name)
 			.transition(trans)
 			.attr('d',d=>line_scale(d.counts))
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
 		s.transition(trans)
+			.
 			.attr('d',d=>line_scale(d.counts))
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
-			.attr('id',d=>d.name);
+			.attr('key',d=>d.name);
 
 ;
 
