@@ -1,7 +1,7 @@
 // NOTE: these global variables will be constructed in plot_it!
-var x_scale, y_scale, line_scale;
+var x_scale, y_scale, area_scale;
 var actual_width, actual_height;
-
+var stack;
 // data type conversions, so we are working with floats and dates
 function data_type_conversion(node)  {
 	if(node.children.length > 0)  {
@@ -58,7 +58,7 @@ function aggregate_counts(node)  {
 		var date_data = {count:population, date : ''};
 		var c = 0;
 		var i = 0;
-		var k = 30;
+		var k = 250;
 		var flag = true;
 		for(i=0; (flag == true) && (i< k);i++, population = 0){
 			
@@ -175,7 +175,8 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	var data = []
 	for(var i =0; i< node_array.length;i++){
 		data.push(node_array[i]);
-	}	
+	}
+	
 	var mainplot_selection = d3.selectAll('#mainplot').selectAll('a').data(data)
 
 	
@@ -196,10 +197,14 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	d3.selectAll('path').remove();//transition(remove_transition).remove();
 		
 	// TODO: add new series
-
+	
 	mainplot_selection.enter().append('path')
 		.attr('class','linechart')
-		.attr('d', d=>line_scale(d.counts))
+		.attr('d', (d,i)=>{
+			console.log("i:"+i);
+			
+			return area_scale(d.counts)
+		})
 		.attr('fill', 'none')
 		.attr('stroke', d=>d.color)
 		.attr('stroke-width', '3')
@@ -294,12 +299,18 @@ function plot_it()  {
 	x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
 	y_scale = d3.scaleLinear().domain([min_count, max_count]).range([min_y, max_y]);
 
-	// TODO: setup the line scale
-	line_scale= d3.line()
+	// TODO: setup the area scale
+
+	area_scale= d3.area()
 		.x(d=>x_scale(d.date))
-		.y(d=>y_scale(d.count));
+		.y0(d=> y_scale(d.count))
+		.y1(d=>y_scale(d.count));
+	
 	// TODO: setup axes from the scales
-	//d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(scale_count));
+        d3.select('svg').append('g').attr('id','bottomaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisBottom(x_scale));
+	
+	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
 	// visualize data!
 	visualize_time_series(count_tree, false);
+	
 }
