@@ -291,31 +291,46 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		{
 			for(var i = 0; i<selected_node.children.length;i++){	
 				
-				var text_s = d3.selectAll('#'+selected_node.children[i].name).selectAll('text').data(node_array);
+				var text_s = d3.selectAll('#'+selected_node.children[i].name).selectAll('text').data([selected_node.children[i]]);
+		
+				if((selected_node != undefined)&&(selected_node.children.length!=0))
+					d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
+				else
+					d3.selectAll('#l_'+root_node.name).remove();
+
+				// TODO: text labels - add new ones (fade them in via opacity)
+	
+				text_s.enter().append('text')
+					.text(d=>d.name)
+					.attr('x',640)
+					.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+					.attr('opacity',0)
+					.attr('id', d=>'l_'+d.name)
+					.transition(trans)
+					.attr('opacity',1);
 			}
 		}
-		else
+		else{
 			var text_s = d3.selectAll('#'+root_node.name).selectAll('text').data(node_array)
 
-
-
-	// TODO: text labels - remove old ones (fade them out via opacity)
+			// TODO: text labels - remove old ones (fade them out via opacity)
 		
-		if((selected_node != undefined)&&(selected_node.children.length!=0))
-			d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
-		else
-			d3.selectAll('#l_'+root_node.name).remove();
+			if((selected_node != undefined)&&(selected_node.children.length!=0))
+				d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
+			else
+				d3.selectAll('#l_'+root_node.name).remove();
 
-	// TODO: text labels - add new ones (fade them in via opacity)
+			// TODO: text labels - add new ones (fade them in via opacity)
 
-		text_s.enter().append('text')
-			.text(d=>d.name)
-			.attr('x',640)
-			.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
-			.attr('opacity',0)
-			.attr('id', d=>'l_'+d.name)
-			.transition(trans)
-			.attr('opacity',1);
+			text_s.enter().append('text')
+				.text(d=>d.name)
+				.attr('x',640)
+				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+				.attr('opacity',0)
+				.attr('id', d=>'l_'+d.name)
+				.transition(trans)
+				.attr('opacity',1);
+		}
 	}
 	else{
 
