@@ -48,7 +48,7 @@ function create_color(root_node)  {
 }
 
 // TODO: create a time series for each non-leaf node (`counts`) that aggregates its count data and dates - same format as `counts` in leaves
-var is_mean = true;//Change this flag to toggle between mean and sum;True for sum, False for mean.
+var is_mean = false;//Change this flag to toggle between mean and sum;True for sum, False for mean.
 function aggregate_counts(node)  {
 	//console.log("node_name:" +node.name);
 	
@@ -399,13 +399,16 @@ function plot_it()  {
 	
 	// TODO: compute the x and y scales for the line plots
 	var min_x = 0, max_x = actual_width, min_y = actual_height, max_y = 0;
-	x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
+	//x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
 	y_scale = d3.scaleLinear().domain([min_count, max_count]).range([min_y, max_y]);
+
+	x_scale= d3.scaleTime().domain([min_date, max_date]).range([min_x, max_x]);
 
 	// TODO: setup the line scale
 	line_scale= d3.line()
 		.x(d=>x_scale(d.date))
 		.y(d=>y_scale(d.count));
+		
 	// TODO: setup axes from the scales
 	d3.select('svg').append('g').attr('id','bottomaxis').attr('transform', 'translate('+ pad +','+(min_y+pad-0)+')').call(d3.axisBottom(x_scale));
 	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
