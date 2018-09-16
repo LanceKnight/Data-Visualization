@@ -202,8 +202,8 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		for(var i= 0; i<parent_node.children.length; i++){
 			d3.selectAll('#'+parent_node.children[i].name).transition(trans).remove();
 		}
-		console.log("enter:")
-		console.log(parent_node.name);
+		//console.log("enter:")
+		//console.log(parent_node.name);
 		d3.selectAll('#'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('path')
 			.attr('d', d=>line_scale(d.children[0].counts))
 			.attr('stroke', d=>d.children[0].color)	
@@ -287,6 +287,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	// TODO: data join for text
 
 	if(is_collapsing == false){
+		
 		if(selected_node != undefined)
 		{
 			for(var i = 0; i<selected_node.children.length;i++){	
@@ -334,6 +335,18 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	}
 	else{
 
+		var parent_node = selected_node.parent
+		var s = d3.selectAll('#'+parent_node.name).selectAll('text').data(parent_node)
+		s.exit().transition(trans).attr('opacity',0);
+			
+		d3.selectAll('#'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('text')
+				.text(d=>d.name)
+				.attr('x',640)
+				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+				.attr('opacity',0)
+				.attr('id', d=>'l_'+d.name)
+				.transition(trans)
+				.attr('opacity',1);
 
 	}
 
