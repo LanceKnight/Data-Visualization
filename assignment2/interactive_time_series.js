@@ -204,20 +204,10 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		}
 		console.log("enter:")
 		console.log(parent_node.name);
-		//s.enter().append('path')//.attr('cx',100).attr('cy',200).attr('r',25).attr('fill','green')
 		d3.selectAll('#'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('path')
 			.attr('d', d=>line_scale(d.children[0].counts))
 			.attr('stroke', d=>d.children[0].color)	
-			.transition(trans)//.attr('cx',100).attr('cy',200).attr('r',25).attr('fill',d=>d.color)
-		/*	.attr('d',d=>{
-					if(d == root_node){
-						return line_scale(d.counts)
-					}
-					else
-						return line_scale(d.parent.counts)
-			
-			return 3	}  )*/
-		
+			.transition(trans)	
 			.attr('d', d=>line_scale(d.counts))
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
@@ -295,15 +285,21 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 
 
 	// TODO: data join for text
-	if(selected_node != undefined)
-		var text_s = d3.selectAll('#'+selected_node.name).selectAll('text').data(node_array);
-	else
-		var text_s = d3.selectAll('#'+root_node.name).selectAll('text').data(node_array)
+
+	if(is_collapsing == false){
+		if(selected_node != undefined)
+			var text_s = d3.selectAll('#'+selected_node.name).selectAll('text').data(node_array);
+		else
+			var text_s = d3.selectAll('#'+root_node.name).selectAll('text').data(node_array)
 
 
 
 	// TODO: text labels - remove old ones (fade them out via opacity)
-			
+		
+		if((selected_node != undefined)&&(selected_node.children.length!=0))
+			d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
+		else
+			d3.selectAll('#l_'+root_node.name).remove();
 
 	// TODO: text labels - add new ones (fade them in via opacity)
 
@@ -315,7 +311,13 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			.attr('id', d=>'l_'+d.name)
 			.transition(trans)
 			.attr('opacity',1);
+	}
+	else{
 
+
+	}
+
+	
 }
 
 
@@ -376,5 +378,5 @@ function plot_it()  {
 	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
 	// visualize data!
 	visualize_time_series(count_tree, false);
-	console.log(count_tree.counts[0].date);
+//	console.log(count_tree.counts[0].date);
 }
