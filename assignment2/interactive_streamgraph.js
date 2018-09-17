@@ -1,7 +1,7 @@
 // NOTE: these global variables will be constructed in plot_it!
-var x_scale, y_scale, area_scale;
+var x_scale, y_scale, line_scale;
 var actual_width, actual_height;
-var stack;
+
 // data type conversions, so we are working with floats and dates
 function data_type_conversion(node)  {
 	if(node.children.length > 0)  {
@@ -48,7 +48,7 @@ function create_color(root_node)  {
 }
 
 // TODO: create a time series for each non-leaf node (`counts`) that aggregates its count data and dates - same format as `counts` in leaves
-var is_mean = true;//Change this flag to toggle between mean and sum;True for sum, False for mean.
+var is_mean = false;//Change this flag to toggle between mean and sum;True for sum, False for mean.
 function aggregate_counts(node)  {
 	//console.log("node_name:" +node.name);
 	
@@ -58,7 +58,7 @@ function aggregate_counts(node)  {
 		var date_data = {count:population, date : ''};
 		var c = 0;
 		var i = 0;
-		var k = 250;
+		var k = 223;
 		var flag = true;
 		for(i=0; (flag == true) && (i< k);i++, population = 0){
 			
@@ -101,6 +101,9 @@ function aggregate_counts(node)  {
 function reset_node_views(node)  {
 	//console.log('reset');
 	node.view_series = false;
+	var name = node.name
+
+	node.name = name.replace(/\s+/g, '_');
 	if (node.children.length>0){
 		
 		for(var i =0; i< node.children.length; i++){
@@ -166,67 +169,109 @@ function collapse_node_view(node)  {
 
 // TODO: does all of the visualization -> get the time series to view (`collect_viewable_nodes`), data join, setup interactions
 function visualize_time_series(root_node, is_collapsing, selected_node)  {
-	
+
+		
+
 	var node_array = [];
-	collect_viewable_nodes(root_node, node_array);
-	
-	// TODO: data join for line plot
-	
-	var data = []
-	for(var i =0; i< node_array.length;i++){
-		data.push(node_array[i]);
+	if(is_collapsing == true)
+		if(selected_node == undefined)
+			collect_viewable_nodes(root_node, node_array);
+		else
+			collect_viewable_nodes(selected_node.parent, node_array);
+	else{	
+		if(selected_node !=undefined)
+			collect_viewable_nodes(selected_node, node_array);
+		else
+			collect_viewable_nodes(root_node,node_array);
 	}
 	
-	var mainplot_selection = d3.selectAll('#mainplot').selectAll('a').data(data)
-
-	
-	// TODO: remove old series
-	
-	var remove_transition;
-	var add_transition;
-
-	//if(is_collapsing == true){
-		remove_transition = d3.transition().duration(2000);
-		add_transition= d3.transition().duration(2000);
-	//}
-	//else{
-	//	remove_transition = d3.transition().duration(0);
-	//	add_transition= d3.transition().duration(1000);
-	
-	//}
-	d3.selectAll('path').remove();//transition(remove_transition).remove();
-		
-	// TODO: add new series
-	
-	mainplot_selection.enter().append('path')
-		.attr('class','linechart')
-		.attr('d', (d,i)=>{
-			console.log("i:"+i);
+	// TODO: data join for line plot
+	var trans = d3.transition().duration(1000);
+	if(is_collapsing == true){//collapsing
+		var parent_node = selected_node.parent
+		var s = d3.selectAll('#g_'+parent_node.name).selectAll('path').data(parent_node)
+		s.exit().transition(trans)
+			.attr('d',d=>{
+					if(d == root_node){
+						return line_scale(d.counts)
+					}
+					else
+						return line_scale(d.parent.counts)
+				})
+			.attr('fill', 'none')
+			.attr('stroke', d=>d.color)
+			.attr('stroke-width', '3')
+			.attr('id', d=>d.name)
 			
-			return area_scale(d.counts)
-		})
-		.attr('fill', 'none')
-		.attr('stroke', d=>d.color)
-		.attr('stroke-width', '3')
-		.attr('key', d=>d.name)
-		.merge(mainplot_selection)
-		.transition(add_transition).attr('opacity',1.0);
+		for(var i= 0; i<parent_node.children.length; i++){
+			d3.selectAll('#g_'+parent_node.children[i].name).transition(trans).remove();
+		}
+		//console.log("enter:")
+		//console.log(parent_node.name);
+		d3.selectAll('#g_'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('path')
+			.attr('d', d=>line_scale(d.children[0].counts))
+			.attr('stroke', d=>d.children[0].color)	
+			.transition(trans)	
+			.attr('d', d=>line_scale(d.counts))
+			.attr('fill', 'none')
+			.attr('stroke', d=>d.color)
+			.attr('stroke-width', '3')
+			.attr('id', d=>d.name)
+
+	}
+
+	else//expanding
+	{
+	//TODO:data join for lineplot
+		if(selected_node == undefined)
+			var s = d3.selectAll('#mainplot').selectAll('path').data(node_array);	
+		else{
+			var s = d3.selectAll('#g_'+selected_node.name).selectAll('g').data(node_array);
+		}
+	console.log(s)	
+	//TODO: remove old series
+
+		if((selected_node != undefined)&&(selected_node.children.length!=0))
+			d3.selectAll("#"+selected_node.name).remove();	
+		else
+			d3.selectAll("#"+root_node.name).remove();
+	// TODO: add new series
+
+		if((selected_node == undefined)||((selected_node != undefined)&&(selected_node.children.length !=0))){
+			s.enter().append('g').attr('id',d=>"g_"+d.name).append('path')
+				.attr('d',d=>{
+					if(d == root_node){
+						return line_scale(d.counts)
+					}
+					else
+						return line_scale(d.parent.counts)
+				})
+				.attr('fill', 'none')
+				.attr('stroke', d=>d.color)
+				.attr('stroke-width', '3')
+				.attr('id', d=>d.name)
+				.transition(trans)
+				.attr('d',d=>line_scale(d.counts))
+				.attr('fill', 'none')
+				.attr('stroke', d=>d.color)
+				.attr('stroke-width', '3')
+
+		}
+	}
+
+
 	// TODO: setup interactions
 	d3.selectAll('path')
 		.on('click', function(d,i,g){
-			
 			if(is_collapsing == false){	
-			expand_node_view(d);}
-			/*if(is_collapsing == true){
-				console.log("shift click!")
-			}
-			else{
-				console.log("normal click!")
-			}*/
+				expand_node_view(d)
+			;}
+			
 			else{
 				collapse_node_view(d);
 			}
-			visualize_time_series(root_node, is_collapsing);
+			console.log("clicked")	
+			visualize_time_series(root_node, is_collapsing, d);
 			
 		})
 		d3.selectAll('body').on('keydown', function(d,i,g){
@@ -245,9 +290,74 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 
 	// TODO: data join for text
 
-	// TODO: text labels - remove old ones (fade them out via opacity)
+	if(is_collapsing == false){
+		
+		if(selected_node != undefined)
+		{
+			for(var i = 0; i<selected_node.children.length;i++){	
+				
+				var text_s = d3.selectAll('#g_'+selected_node.children[i].name).selectAll('text').data([selected_node.children[i]]);
+		
+				if((selected_node != undefined)&&(selected_node.children.length!=0))
+					d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
+				else
+					d3.selectAll('#l_'+root_node.name).remove();
 
-	// TODO: text labels - add new ones (fade them in via opacity)
+				// TODO: text labels - add new ones (fade them in via opacity)
+	
+				text_s.enter().append('text')
+					.text(d=>d.name.replace('_', ' '))
+					.attr('x',640)
+					.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+					.attr('opacity',0)
+					.attr('id', d=>'l_'+d.name)
+					.transition(trans)
+					.attr('opacity',1);
+			}
+		}
+		else{
+			var text_s = d3.selectAll('#g_'+root_node.name).selectAll('text').data(node_array)
+
+			// TODO: text labels - remove old ones (fade them out via opacity)
+		
+			if((selected_node != undefined)&&(selected_node.children.length!=0))
+				d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
+			else
+				d3.selectAll('#l_'+root_node.name).remove();
+
+			// TODO: text labels - add new ones (fade them in via opacity)
+
+			text_s.enter().append('text')
+				.text(d=>{
+					//console.log(d.name.replace('_','k'));
+					return d.name.replace('_', ' ')})
+				.attr('x',640)
+				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+				
+				.attr('opacity',0)
+				.attr('id', d=>'l_'+d.name)
+				.transition(trans)
+				.attr('opacity',1);
+		}
+	}
+	else{
+
+		var parent_node = selected_node.parent
+		var s = d3.selectAll('#g_'+parent_node.name).selectAll('text').data(parent_node)
+		s.exit().transition(trans).attr('opacity',0);
+			
+		d3.selectAll('#g_'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('text')
+				.text(d=>d.name.replace('_', ' '))
+				.attr('x',640)
+				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+				.attr('opacity',0)
+				.attr('id', d=>'l_'+d.name)
+				.transition(trans)
+				.attr('opacity',1);
+
+	}
+
+	
 }
 
 
@@ -266,7 +376,7 @@ function plot_it()  {
 
 	// ... and then set the root node view to be true (have to view something to start!)
 	count_tree.view_series = true;
-//	count_tree.children[0].view_series = true;
+	//	count_tree.children[0].view_series = true;
 
 	// visualization setup: width, height, padding, actual width and height
 	var width = 800, height = 800;
@@ -296,21 +406,20 @@ function plot_it()  {
 	
 	// TODO: compute the x and y scales for the line plots
 	var min_x = 0, max_x = actual_width, min_y = actual_height, max_y = 0;
-	x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
+	//x_scale = d3.scaleLinear().domain([min_date, max_date]).range([min_x, max_x]);
 	y_scale = d3.scaleLinear().domain([min_count, max_count]).range([min_y, max_y]);
 
-	// TODO: setup the area scale
+	x_scale= d3.scaleTime().domain([min_date, max_date]).range([min_x, max_x]);
 
-	area_scale= d3.area()
+	// TODO: setup the line scale
+	line_scale= d3.line()
 		.x(d=>x_scale(d.date))
-		.y0(d=> y_scale(d.count))
-		.y1(d=>y_scale(d.count));
-	
+		.y(d=>y_scale(d.count));
+		
 	// TODO: setup axes from the scales
-        d3.select('svg').append('g').attr('id','bottomaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisBottom(x_scale));
-	
+	d3.select('svg').append('g').attr('id','bottomaxis').attr('transform', 'translate('+ pad +','+(min_y+pad-0)+')').call(d3.axisBottom(x_scale));
 	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
 	// visualize data!
 	visualize_time_series(count_tree, false);
-	
+//	console.log(count_tree);
 }

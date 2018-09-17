@@ -333,7 +333,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 					return d.name.replace('_', ' ')})
 				.attr('x',640)
 				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
-				.attr('width', 'auto')
+				
 				.attr('opacity',0)
 				.attr('id', d=>'l_'+d.name)
 				.transition(trans)
