@@ -101,6 +101,9 @@ function aggregate_counts(node)  {
 function reset_node_views(node)  {
 	//console.log('reset');
 	node.view_series = false;
+	var name = node.name
+
+	node.name = name.replace(/\s+/g, '_');
 	if (node.children.length>0){
 		
 		for(var i =0; i< node.children.length; i++){
@@ -181,6 +184,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		else
 			collect_viewable_nodes(root_node,node_array);
 	}
+	
 	// TODO: data join for line plot
 	var trans = d3.transition().duration(1000);
 	if(is_collapsing == true){//collapsing
@@ -224,7 +228,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		else{
 			var s = d3.selectAll('#g_'+selected_node.name).selectAll('g').data(node_array);
 		}
-	
+	console.log(s)	
 	//TODO: remove old series
 
 		if((selected_node != undefined)&&(selected_node.children.length!=0))
@@ -266,7 +270,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			else{
 				collapse_node_view(d);
 			}
-		
+			console.log("clicked")	
 			visualize_time_series(root_node, is_collapsing, d);
 			
 		})
@@ -414,5 +418,5 @@ function plot_it()  {
 	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
 	// visualize data!
 	visualize_time_series(count_tree, false);
-//	console.log(count_tree.counts[0].date);
+//	console.log(count_tree);
 }
