@@ -306,7 +306,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 				// TODO: text labels - add new ones (fade them in via opacity)
 	
 				text_s.enter().append('text')
-					.text(d=>d.name)
+					.text(d=>d.name.replace('_', ' '))
 					.attr('x',640)
 					.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
 					.attr('opacity',0)
@@ -328,9 +328,12 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			// TODO: text labels - add new ones (fade them in via opacity)
 
 			text_s.enter().append('text')
-				.text(d=>d.name)
+				.text(d=>{
+					//console.log(d.name.replace('_','k'));
+					return d.name.replace('_', ' ')})
 				.attr('x',640)
 				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
+				.attr('width', 'auto')
 				.attr('opacity',0)
 				.attr('id', d=>'l_'+d.name)
 				.transition(trans)
@@ -344,7 +347,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		s.exit().transition(trans).attr('opacity',0);
 			
 		d3.selectAll('#g_'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('text')
-				.text(d=>d.name)
+				.text(d=>d.name.replace('_', ' '))
 				.attr('x',640)
 				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
 				.attr('opacity',0)
