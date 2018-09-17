@@ -185,7 +185,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	var trans = d3.transition().duration(1000);
 	if(is_collapsing == true){//collapsing
 		var parent_node = selected_node.parent
-		var s = d3.selectAll('#'+parent_node.name).selectAll('path').data(parent_node)
+		var s = d3.selectAll('#g_'+parent_node.name).selectAll('path').data(parent_node)
 		s.exit().transition(trans)
 			.attr('d',d=>{
 					if(d == root_node){
@@ -197,14 +197,14 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
-			.attr('key', d=>d.name)
+			.attr('id', d=>d.name)
 			
 		for(var i= 0; i<parent_node.children.length; i++){
-			d3.selectAll('#'+parent_node.children[i].name).transition(trans).remove();
+			d3.selectAll('#g_'+parent_node.children[i].name).transition(trans).remove();
 		}
 		//console.log("enter:")
 		//console.log(parent_node.name);
-		d3.selectAll('#'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('path')
+		d3.selectAll('#g_'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('path')
 			.attr('d', d=>line_scale(d.children[0].counts))
 			.attr('stroke', d=>d.children[0].color)	
 			.transition(trans)	
@@ -212,7 +212,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			.attr('fill', 'none')
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
-			.attr('key', d=>d.name)
+			.attr('id', d=>d.name)
 
 	}
 
@@ -222,19 +222,19 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		if(selected_node == undefined)
 			var s = d3.selectAll('#mainplot').selectAll('path').data(node_array);	
 		else{
-			var s = d3.selectAll('#'+selected_node.name).selectAll('g').data(node_array);
+			var s = d3.selectAll('#g_'+selected_node.name).selectAll('g').data(node_array);
 		}
 	
 	//TODO: remove old series
 
 		if((selected_node != undefined)&&(selected_node.children.length!=0))
-			d3.selectAll("[key = "+selected_node.name+"]").remove();	
+			d3.selectAll("#"+selected_node.name).remove();	
 		else
-			d3.selectAll("[key = "+root_node.name+"]").remove();
+			d3.selectAll("#"+root_node.name).remove();
 	// TODO: add new series
 
 		if((selected_node == undefined)||((selected_node != undefined)&&(selected_node.children.length !=0))){
-			s.enter().append('g').attr('id',d=>d.name).append('path')
+			s.enter().append('g').attr('id',d=>"g_"+d.name).append('path')
 				.attr('d',d=>{
 					if(d == root_node){
 						return line_scale(d.counts)
@@ -245,7 +245,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 				.attr('fill', 'none')
 				.attr('stroke', d=>d.color)
 				.attr('stroke-width', '3')
-				.attr('key', d=>d.name)
+				.attr('id', d=>d.name)
 				.transition(trans)
 				.attr('d',d=>line_scale(d.counts))
 				.attr('fill', 'none')
@@ -292,7 +292,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		{
 			for(var i = 0; i<selected_node.children.length;i++){	
 				
-				var text_s = d3.selectAll('#'+selected_node.children[i].name).selectAll('text').data([selected_node.children[i]]);
+				var text_s = d3.selectAll('#g_'+selected_node.children[i].name).selectAll('text').data([selected_node.children[i]]);
 		
 				if((selected_node != undefined)&&(selected_node.children.length!=0))
 					d3.selectAll("#l_"+selected_node.name).transition(trans).attr('opacity',0).remove();	
@@ -312,7 +312,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			}
 		}
 		else{
-			var text_s = d3.selectAll('#'+root_node.name).selectAll('text').data(node_array)
+			var text_s = d3.selectAll('#g_'+root_node.name).selectAll('text').data(node_array)
 
 			// TODO: text labels - remove old ones (fade them out via opacity)
 		
@@ -336,10 +336,10 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	else{
 
 		var parent_node = selected_node.parent
-		var s = d3.selectAll('#'+parent_node.name).selectAll('text').data(parent_node)
+		var s = d3.selectAll('#g_'+parent_node.name).selectAll('text').data(parent_node)
 		s.exit().transition(trans).attr('opacity',0);
 			
-		d3.selectAll('#'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('text')
+		d3.selectAll('#g_'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('text')
 				.text(d=>d.name)
 				.attr('x',640)
 				.attr('y', d=>y_scale(d.counts[d.counts.length-1].count))
