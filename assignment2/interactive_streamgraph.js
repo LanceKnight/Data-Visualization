@@ -60,6 +60,7 @@ function aggregate_counts(node)  {
 		var i = 0;
 		var k = 223;
 		var flag = true;
+		var sum = []
 		for(i=0; (flag == true) && (i< k);i++, population = 0){
 			
 			for(c = 0; c < node.children.length; c++){	
@@ -75,10 +76,12 @@ function aggregate_counts(node)  {
 				date = date_child_counts.date;
 
 			}//for loop (var c)
+			var sum = population;
+			var mean = population/node.children.length;
 			if(is_mean == false)
-				date_data = {count: population, date:date }	
+				date_data = {count: population, date:date, sum:sum}	
 			else
-				date_data = {count:population/node.children.length, date:date}	
+				date_data = {count:population/node.children.length, date:date, sum:sum}	
 			if(flag != false){	
 			
 				node.counts.push(date_data);
@@ -96,18 +99,61 @@ function aggregate_counts(node)  {
 	
 
 }
-
+var total=[];
 // TODO: create/set `view_series` field to false for `node` and all of its children
 function reset_node_views(node)  {
 	//console.log('reset');
 	node.view_series = false;
 	var name = node.name
-
 	node.name = name.replace(/\s+/g, '_');
+	if(node.parent!= null){
+		var upper = [], lower=[]
+		
+		//console.log("total:"+total);			
+	}
+	else{
+		//console.log("sum:"+node);
+		for(var i = 0; i<node.counts.length;i++){
+			total.push( node.counts[i].count);
+		}
+
+			console.log("keep total:"+total);
+		var upper, lower
+	
+		for(var i = 0; i<total.length;i++){
+			upper = total[i]/2
+			lower = -total[i]/2
+			
+			node.counts[i].upper = upper;
+			node.counts[i].lower = lower;
+		}
+		
+	}
+
 	if (node.children.length>0){
 		
 		for(var i =0; i< node.children.length; i++){
-		
+			var upper, lower;
+			for(var j = 0; j <node.counts.length;j++){
+				if(i==0){
+					upper = node.counts[j].upper;
+					lower = upper-node.children[i].counts[j].count;	
+					//console.log("upper:"+upper)
+					//console.log("lower:"+lower)
+					//console.log("count:"+node.counts[j].count);				
+					node.children[i].counts[j].upper = upper;
+					node.children[i].counts[j].lower = lower;
+				}
+				else{
+					upper =node.children[i-1].counts[j].lower;
+					lower =upper-node.children[i].counts[j].count;
+			
+					node.children[i].counts[j].upper = upper;
+					node.children[i].counts[j].lower = lower;
+
+				}
+			}
+	
 			reset_node_views(node.children[i]);
 
 		}
@@ -241,18 +287,19 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			s.enter().append('g').attr('id',d=>"g_"+d.name).append('path')
 				.attr('d',d=>{
 					if(d == root_node){
-						return line_scale(d.counts)
+						console.log("area")
+						return area_scale(d.counts)
 					}
 					else
-						return line_scale(d.parent.counts)
+						return area_scale(d.parent.counts)
 				})
 				.attr('fill', 'none')
 				.attr('stroke', d=>d.color)
 				.attr('stroke-width', '3')
 				.attr('id', d=>d.name)
 				.transition(trans)
-				.attr('d',d=>line_scale(d.counts))
-				.attr('fill', 'none')
+				.attr('d',d=>area_scale(d.counts))
+				.attr('fill', d=>d.color)
 				.attr('stroke', d=>d.color)
 				.attr('stroke-width', '3')
 
@@ -393,9 +440,11 @@ function plot_it()  {
 	// TODO: setting up scales: we need to compute the minimum and maximum of our count data and dates; so first, lets get our count data from all nodes, then compute min/max
 	var count_array = [];
 	get_all_count_data(count_tree, count_array);
-	//console.log(count_array.length);
-	var min_count = d3.min(count_array), max_count = d3.max(count_array);
+	var max = d3.max(total)
+	var min_count = -max/2//d3.min(count_array), max_count = d3.max(count_array);
+	var max_count = max/2
 	
+	console.log(min_count);
 	// TODO: for the min/max of dates, they are equivalent across nodes, so just map the root node's dates to an array, compute min and max
 	var date_array = [];
 	for(var i = 0;i<count_tree.counts.length;i++){
@@ -416,10 +465,15 @@ function plot_it()  {
 		.x(d=>x_scale(d.date))
 		.y(d=>y_scale(d.count));
 		
+	area_scale= d3.area()
+		.x(d=>x_scale(d.date))
+		.y0(d=>y_scale(d.lower))
+		.y1(d=>y_scale(d.upper));
+
 	// TODO: setup axes from the scales
 	d3.select('svg').append('g').attr('id','bottomaxis').attr('transform', 'translate('+ pad +','+(min_y+pad-0)+')').call(d3.axisBottom(x_scale));
 	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
 	// visualize data!
 	visualize_time_series(count_tree, false);
-//	console.log(count_tree);
+	console.log(count_tree);
 }
