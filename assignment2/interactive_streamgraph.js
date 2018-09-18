@@ -48,7 +48,7 @@ function create_color(root_node)  {
 }
 
 // TODO: create a time series for each non-leaf node (`counts`) that aggregates its count data and dates - same format as `counts` in leaves
-var is_mean = false;//Change this flag to toggle between mean and sum;True for sum, False for mean.
+var is_mean = true;//Change this flag to toggle between mean and sum;True for sum, False for mean.
 function aggregate_counts(node)  {
 	//console.log("node_name:" +node.name);
 	
@@ -422,6 +422,22 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 	
 }
 
+function get_all_sum(node, array){
+	for(var i =0;i<node.counts.length;i++){
+		console.log("name:"+node.name + ", sum:"+node.counts[i].sum)
+		if(node.counts[i].sum != undefined)
+			array.push(node.counts[i].sum);
+	}
+	if(node.children.length>0){
+		for(var i=0;i<node.children.length;i++){
+		
+		//	console.log("here")
+			get_all_sum(node.children[i],array);
+		}	
+	}
+}
+
+
 
 function plot_it()  {
 	// some preprocessing
@@ -455,10 +471,18 @@ function plot_it()  {
 	// TODO: setting up scales: we need to compute the minimum and maximum of our count data and dates; so first, lets get our count data from all nodes, then compute min/max
 	var count_array = [];
 	get_all_count_data(count_tree, count_array);
-	var max = d3.max(total)
-	var min_count = -max/2//d3.min(count_array), max_count = d3.max(count_array);
-	var max_count = max/2
-	
+	if(is_mean == false){
+		var max = d3.max(total)
+		var min_count = -max/2//d3.min(count_array), max_count = d3.max(count_array);
+		var max_count = max/2
+	}else{
+		var array =[];
+		get_all_sum(count_tree, array);
+		console.log(array)
+		var max = d3.max(array);
+		var min_count = max/2;
+		var max_count = -max/2
+	}
 	//console.log(min_count);
 	// TODO: for the min/max of dates, they are equivalent across nodes, so just map the root node's dates to an array, compute min and max
 	var date_array = [];
