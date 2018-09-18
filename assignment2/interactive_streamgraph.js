@@ -100,10 +100,9 @@ function aggregate_counts(node)  {
 
 }
 var total=[];
-// TODO: create/set `view_series` field to false for `node` and all of its children
-function reset_node_views(node)  {
-	//console.log('reset');
-	node.view_series = false;
+
+function set_up_low(node){
+
 	var name = node.name
 	node.name = name.replace(/\s+/g, '_');
 	if(node.parent!= null){
@@ -154,10 +153,22 @@ function reset_node_views(node)  {
 				}
 			}
 	
-			reset_node_views(node.children[i]);
+			set_up_low(node.children[i]);
 
 		}
 	
+	}
+}
+// TODO: create/set `view_series` field to false for `node` and all of its children
+function reset_node_views(node)  {
+	//console.log('reset');
+	node.view_series = false;
+
+	if (node.children.length>0){
+		
+		for(var i =0; i< node.children.length; i++){
+			reset_node_views(node.children[i]);
+		}	
 	}
 
 	if(node.name == 'Japan'){
@@ -239,12 +250,12 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		s.exit().transition(trans)
 			.attr('d',d=>{
 					if(d == root_node){
-						return line_scale(d.counts)
+						return area_scale(d.counts)
 					}
 					else
-						return line_scale(d.parent.counts)
+						return area_scale(d.parent.counts)
 				})
-			.attr('fill', 'none')
+			.attr('fill', d=>d.color)
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
 			.attr('id', d=>d.name)
@@ -255,11 +266,11 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		//console.log("enter:")
 		//console.log(parent_node.name);
 		d3.selectAll('#g_'+parent_node.name).selectAll('circle').data([parent_node]).enter().append('path')
-			.attr('d', d=>line_scale(d.children[0].counts))
+			.attr('d', d=>area_scale(d.children[0].counts))
 			.attr('stroke', d=>d.children[0].color)	
 			.transition(trans)	
-			.attr('d', d=>line_scale(d.counts))
-			.attr('fill', 'none')
+			.attr('d', d=>area_scale(d.counts))
+			.attr('fill', d=>d.color)
 			.attr('stroke', d=>d.color)
 			.attr('stroke-width', '3')
 			.attr('id', d=>d.name)
@@ -420,7 +431,7 @@ function plot_it()  {
 
 	// Second: we initialize the nodes as to whether or not to visualize them - first, lets assume we aren't viewing any of them ...
 	reset_node_views(count_tree);
-
+	set_up_low(count_tree);
 	// ... and then set the root node view to be true (have to view something to start!)
 	count_tree.view_series = true;
 	//	count_tree.children[0].view_series = true;
