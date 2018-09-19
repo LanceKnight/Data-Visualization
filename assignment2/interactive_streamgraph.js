@@ -101,64 +101,119 @@ function aggregate_counts(node)  {
 }
 var total=[];
 
-function set_up_low(node){
-
-	var name = node.name
-	node.name = name.replace(/\s+/g, '_');
-	if(node.parent!= null){
-		var upper = [], lower=[]
+/*
+function set_up_low(root_node, node, first_time){
+	if(first_time == true)
+	{
+		var name = node.name
+		node.name = name.replace(/\s+/g, '_');
+		if(node.parent!= null){
+			var upper = [], lower=[]
 		
 		//console.log("total:"+total);			
-	}
-	else{
-		//console.log("sum:"+node);
-		for(var i = 0; i<node.counts.length;i++){
-			total.push( node.counts[i].count);
 		}
+		else{
+			//console.log("sum:"+node);
+			for(var i = 0; i<node.counts.length;i++){
+				total.push( node.counts[i].count);
+			}
 
 			//console.log("keep total:"+total);
-		var upper, lower
+			var upper, lower
 	
-		for(var i = 0; i<total.length;i++){
-			upper = total[i]/2
-			lower = -total[i]/2
-			
-			node.counts[i].upper = upper;
-			node.counts[i].lower = lower;
+			for(var i = 0; i<total.length;i++){
+				upper = total[i]/2
+				lower = -total[i]/2	
+				node.counts[i].upper = upper;
+				node.counts[i].lower = lower;
+			}
+		
 		}
-		
 	}
-
 	if (node.children.length>0){
-		
-		for(var i =0; i< node.children.length; i++){
+			
+		var array = [];
+		collect_viewable_nodes(root_node, array);
+		for(var k = 0; k < array.length; k++){
+		//	if(node.parent!= null){
+		//		node.parent.
+		//	}	
+		}
+		for(var i =0; i< array.length; i++){
 			var upper, lower;
 			for(var j = 0; j <node.counts.length;j++){
 				if(i==0){
-					upper = node.counts[j].upper;
-					lower = upper-node.children[i].counts[j].count;	
-					//console.log("upper:"+upper)
-					//console.log("lower:"+lower)
-					//console.log("count:"+node.counts[j].count);				
-					node.children[i].counts[j].upper = upper;
-					node.children[i].counts[j].lower = lower;
+					if(is_mean == false){
+						upper = node.counts[j].upper;
+						lower = upper-array[i].counts[j].count;	
+						//console.log("upper:"+upper)
+						//console.log("lower:"+lower)
+						//console.log("count:"+node.counts[j].count);				
+					}
+					else{
+						upper = node.counts[j].sum/2;
+						console.log("sum:"+upper)
+						lower = upper-array[i].counts[j].count;
+						console.log("count:"+array[i].counts[j].count)
+					}
 				}
 				else{
-					upper =node.children[i-1].counts[j].lower;
-					lower =upper-node.children[i].counts[j].count;
+				
+					if(is_mean == false){
+						upper =array[i-1].counts[j].lower;
+						lower =upper-array[i].counts[j].count;
 			
-					node.children[i].counts[j].upper = upper;
-					node.children[i].counts[j].lower = lower;
+					}
+					else{
 
+						upper = array[i-1].counts[j].lower;
+						lower = upper-array[i].counts[j].count;
+					}
 				}
+
+				node.children[i].counts[j].upper = upper;
+				node.children[i].counts[j].lower = lower;
 			}
 	
-			set_up_low(node.children[i]);
+			set_up_low(root_node, array[i], first_time);
 
 		}
 	
 	}
 }
+*/
+
+function set_up_low(root, node, first_time){
+	var array = []
+	collect_viewable_nodes(root, array);
+	var counts_length = root.counts.length;
+	var sum_array=[];
+	console.log("viewable array");
+	for(var j =0; j <counts_length;j++){
+		var sum =0;
+		for(var k =0; k<array.length;k++){
+			sum+=array[k].counts[j].count;
+		}
+		sum_array.push(sum);
+	}
+	console.log(array);
+	for(var j =0; j<counts_length;j++){
+		for(var k =0; k<array.length;k++){
+			if(k==0){
+				//console.log("sum[j]:"+sum_array[j]);
+				array[k].counts[j].upper = sum_array[j]/2;
+				array[k].counts[j].lower = sum_array[j]/2-array[k].counts[j].count;
+			}
+			else{
+				array[k].counts[j].upper = array[k-1].counts[j].lower;
+				array[k].counts[j].lower = array[k].counts[j].upper- array[k].counts[j].count;
+			}
+		}	
+	}
+
+}
+
+
 // TODO: create/set `view_series` field to false for `node` and all of its children
 function reset_node_views(node)  {
 	//console.log('reset');
@@ -287,15 +342,34 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		}
 	//console.log(s)	
 	//TODO: remove old series
-
+	s.exit().remove();
+		/*
 		if((selected_node != undefined)&&(selected_node.children.length!=0))
 			d3.selectAll("#"+selected_node.name).remove();	
 		else
-			d3.selectAll("#"+root_node.name).remove();
+			d3.selectAll("#"+root_node.name).remove();*/
 	// TODO: add new series
 
 		if((selected_node == undefined)||((selected_node != undefined)&&(selected_node.children.length !=0))){
 			s.enter().append('g').attr('id',d=>"g_"+d.name).append('path')
+				.attr('d',d=>{
+					if(d == root_node){
+						console.log("area")
+						return area_scale(d.counts)
+					}
+					else
+						return area_scale(d.parent.counts)
+				})
+				.attr('fill', 'none')
+				.attr('stroke', d=>d.color)
+				.attr('stroke-width', '3')
+				.attr('id', d=>d.name)
+				//.transition(trans)
+				.attr('d',d=>area_scale(d.counts))
+				.attr('fill', d=>d.color)
+				.attr('stroke', d=>d.color)
+				.attr('stroke-width', '3')
+				.merge(s)	
 				.attr('d',d=>{
 					if(d == root_node){
 						console.log("area")
@@ -329,7 +403,8 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 				collapse_node_view(d);
 			}
 			console.log("clicked")	
-			visualize_time_series(root_node, is_collapsing, d);
+			set_up_low(root_node, root_node, false);
+			visualize_time_series(root_node, is_collapsing);
 			
 		})
 		d3.selectAll('body').on('keydown', function(d,i,g){
@@ -372,9 +447,9 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 					//.transition(trans)
 					//.attr('opacity',1);
 					var x = selected_node.children[i]
-					console.log("upper"+x.counts[x.counts.length-1].upper)
+				//	console.log("upper"+x.counts[x.counts.length-1].upper)
 					
-					console.log("lower"+x.counts[x.counts.length-1].lower)
+				//	console.log("lower"+x.counts[x.counts.length-1].lower)
 			}
 		}
 		else{
@@ -424,7 +499,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 
 function get_all_sum(node, array){
 	for(var i =0;i<node.counts.length;i++){
-		console.log("name:"+node.name + ", sum:"+node.counts[i].sum)
+//		console.log("name:"+node.name + ", sum:"+node.counts[i].sum)
 		if(node.counts[i].sum != undefined)
 			array.push(node.counts[i].sum);
 	}
@@ -451,9 +526,10 @@ function plot_it()  {
 
 	// Second: we initialize the nodes as to whether or not to visualize them - first, lets assume we aren't viewing any of them ...
 	reset_node_views(count_tree);
-	set_up_low(count_tree);
 	// ... and then set the root node view to be true (have to view something to start!)
 	count_tree.view_series = true;
+
+	set_up_low(count_tree, count_tree);
 	//	count_tree.children[0].view_series = true;
 
 	// visualization setup: width, height, padding, actual width and height
@@ -470,7 +546,7 @@ function plot_it()  {
 
 	// TODO: setting up scales: we need to compute the minimum and maximum of our count data and dates; so first, lets get our count data from all nodes, then compute min/max
 	var count_array = [];
-	get_all_count_data(count_tree, count_array);
+	get_all_count_data(count_tree, count_array, true);
 	if(is_mean == false){
 		var max = d3.max(total)
 		var min_count = -max/2//d3.min(count_array), max_count = d3.max(count_array);
@@ -478,10 +554,10 @@ function plot_it()  {
 	}else{
 		var array =[];
 		get_all_sum(count_tree, array);
-		console.log(array)
+	//	console.log(array)
 		var max = d3.max(array);
-		var min_count = max/2;
-		var max_count = -max/2
+		var min_count = -max/2;
+		var max_count = max/2
 	}
 	//console.log(min_count);
 	// TODO: for the min/max of dates, they are equivalent across nodes, so just map the root node's dates to an array, compute min and max
