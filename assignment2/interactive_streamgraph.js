@@ -214,30 +214,51 @@ function set_up_low(root, node, first_time){
 }
 
 
-function get_leaf_sum(node, sum_array){
-	var counts_length = node.counts.length;
-	console.log("get leaf array");
-//
-	if( node.children.length == 0){
-		//console.log(node.name)
-		for(var j =0; j <counts_length;j++){
-			if(sum_array[j]!=undefined)
-				var sum = sum_array[j]
-			else
-				var sum =0;
-			sum += node.counts[j].count;
-			if(sum_array[j]!=undefined)
-				sum_array[j]=sum;
-			else
-				sum_array.push(sum)
-		}
+function get_leaf_sum(array, sum_array){
+	
+//	console.log("get leaf array");
+	
+//	console.log(array)
+	var counts_length = array[0].counts.length;
+	var node;
+	for(var k = 0; k<array.length; k++){
+		node = array[k];
 	}
-	else{		
-		for(var i =0; i<node.children.length;i++){
-			get_leaf_sum(node.children[i], sum_array);
-		}
 		
-	}
+
+//	if( node.children.length == 0){
+//		console.log(node.name)
+		for(var j =0; j <counts_length;j++){
+			//console.log('here')
+			if(sum_array[j]!=undefined){
+				sum_array[j]+=node.counts[j].count
+			//	console.log('defined 1')
+			}
+			else{
+				sum_array[j]=node.counts[j].count;
+			//	console.log('undefined 1')
+			}/*
+			sum += node.counts[j].count;
+			if(sum_array[j]!=undefined){
+				sum_array[j]=sum;
+				console.log('sum_array[j] is defined')
+			}
+			else{
+				sum_array.push(sum)
+				console.log('sum_array[j] is undefined');
+			}*/
+//			console.log(sum_array)
+		}
+	
+//	}
+//	else{		
+	array.pop();
+//	console.log('before next')	
+//	console.log(array)
+	if(array.length!=0)	
+		get_leaf_sum(array, sum_array);
+		
+//	}
 
 }
 
@@ -329,15 +350,67 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 		.y1(d=>y_scale(d.upper));
 
 */
+	if(selected_node != undefined){
+		var array=[];
+		console.log("node array:"+node_array.length);
+		for(var i = 0; i<node_array.length; i++){
+			for(var j =0; j<node_array[0].counts.length;j++){
+				array.push(node_array[i].counts[j].upper)	
+			}
+		}
+		max_count = d3.max(array);
+		array = []
+		for(var i = 0; i<node_array.length; i++){
+			for(var j =0; j<node_array[0].counts.length;j++){
+				array.push(node_array[i].counts[j].lower)	
+			}
+		}
+		min_count = d3.min(array)
+		//console.log(count_array)
+		//var max = d3.max(count_array)
+		//console.log('max:'+max)
+		//min_count = -max/2
+		//max_count = max/2
+		console.log(min_count);
+		console.log(max_count);
+	
+		//var t = d3.scaleLinear().domain([0, 100]).range([640, 0]);
 
+		var date_array = [];
+		for(var i = 0;i<count_tree.counts.length;i++){
+			date_array.push(count_tree.counts[i].date);
+		}
+		//console.log(date_array);
+		var min_date= d3.min(date_array), max_date = d3.max(date_array);
+	
+		x_scale= d3.scaleTime().domain([min_date, max_date]).range([0, 640]);
 
-	var s = d3.selectAll('#mainplot').selectAll('path').data(node_array)
+		y_scale = d3.scaleLinear().domain([min_count, max_count]).range([640, 0]);
+		area_scale= d3.area()
+			.x(d=>{
+				console.log('activate')
+				return x_scale(d.date)
 
+			})
+			.y0(d=>y_scale(d.lower))
+			.y1(d=>y_scale(d.upper));
+		//console.log("scaled:"+y_scale(-2078526))
+		//console.log(area_scale)
+	}
 
+	//console.log("scaled:"+y_scale(-2078526))
+	var s = d3.selectAll('#mainplot').selectAll('t').data(node_array)
+
+	d3.selectAll('path').remove()
 	s.exit().remove();
-
+	
 	s.enter().append('path')
-	.attr('d', d=>area_scale(d.counts))
+	.attr('d', d=>{
+
+		console.log('data binding')
+		return	area_scale(d.counts)
+
+		})
 	.attr('fill', d=>d.color)
 	.merge(s)
 	
@@ -356,7 +429,7 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 			}
 			console.log("clicked")	
 			set_up_low(root_node, root_node, false);
-			visualize_time_series(root_node, is_collapsing);
+			visualize_time_series(root_node, is_collapsing, d);
 			
 		})
 		d3.selectAll('body').on('keydown', function(d,i,g){
@@ -447,22 +520,12 @@ function plot_it()  {
 	// TODO: setting up scales: we need to compute the minimum and maximum of our count data and dates; so first, lets get our count data from all nodes, then compute min/max
 	var count_array = [];
 	var sum;
-//	get_all_count_data(count_tree, count_array, false)
-	get_leaf_sum(count_tree, count_array);	
-console.log(count_array)		
-	
-//	if(is_mean == false){
-		var max = d3.max(count_array)
-		var min_count = -max/2//d3.min(count_array), max_count = d3.max(count_array);
-		var max_count = max/2
-//	}else{
-//		var array =[];
-//		get_all_sum(count_tree, array);
-	//	console.log(array)
-//		var max = d3.max(array);
-//		var min_count = -max/2;
-//		var max_count = max/2
-//	}
+	for(var i = 0;i<count_tree.counts.length;i++){
+		count_array.push(count_tree.counts[i].count);
+	}
+	var max = d3.max(count_array)
+	min_count = -max/2
+	max_count = max/2
 	//console.log(min_count);
 	// TODO: for the min/max of dates, they are equivalent across nodes, so just map the root node's dates to an array, compute min and max
 	var date_array = [];
@@ -488,12 +551,12 @@ console.log(count_array)
 		.x(d=>x_scale(d.date))
 		.y0(d=>y_scale(d.lower))
 		.y1(d=>y_scale(d.upper));
-
+	console.log(area_scale)
 	// TODO: setup axes from the scales
 	d3.select('svg').append('g').attr('id','bottomaxis').attr('transform', 'translate('+ pad +','+(min_y+pad-0)+')').call(d3.axisBottom(x_scale));
 //	d3.select('svg').append('g').attr('id','leftaxis').attr('transform', 'translate('+ pad +','+(pad-0)+')').call(d3.axisLeft(y_scale));
 	// visualize data!
 //console.log("here")
 	visualize_time_series(count_tree, false);
-//	console.log(count_tree);
+	console.log(count_tree);
 }
