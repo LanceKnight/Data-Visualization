@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 3 - Question 3</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+	</body>
+	<script type='text/javascript'>
+	{
+		d3.csv('birds.csv')
+		  .then(function(data)  {
+			  bird_data = data;
+			  bird_data.forEach(function(d)  {
+				  d.bird_size=+d.bird_size;
+				  d.wing_length=+d.wing_length+0.01;
+			  });
+			  plot_it();
+		  })
+
+		function plot_it()  {
+			var width = 700, height = 700;
+			var pad = 80;
+			var actual_width = width-2*pad, actual_height = height-2*pad;
+			d3.select('body').append('svg').attr('width', width).attr('height', height)
+			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('class', 'basegroup')
+			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
+				.text('Question 3: How does wing length compare across different head patterns and wing patterns?')
+		}
+	}
+
+/*
+
+Q: Why did you choose the particular mark(s)?
+A: 
+
+Q: Why did you choose the particular channels?
+A: 
+
+Q: Why is your design good in helping to answer the question?
+A: 
+
+Q: What are the limitations of your design in attempting to answer the question?
+A: 
+
+*/
+	</script>
+</html>

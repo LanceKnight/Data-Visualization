@@ -48,6 +48,7 @@ function create_color(root_node)  {
 }
 
 // TODO: create a time series for each non-leaf node (`counts`) that aggregates its count data and dates - same format as `counts` in leaves
+<<<<<<< HEAD
 var is_mean = false;//Change this flag to toggle between mean and sum;True for sum, False for mean.
 function aggregate_counts(node)  {
 	//console.log("node_name:" +node.name);
@@ -95,10 +96,14 @@ function aggregate_counts(node)  {
 	return node.counts//, node.counts.date];
 	
 
+=======
+function aggregate_counts(node)  {
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 }
 
 // TODO: create/set `view_series` field to false for `node` and all of its children
 function reset_node_views(node)  {
+<<<<<<< HEAD
 	//console.log('reset');
 	node.view_series = false;
 	var name = node.name
@@ -118,10 +123,13 @@ function reset_node_views(node)  {
 	//	console.log(node);
 	}
 
+=======
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 }
 
 // TODO: traverse tree, adding nodes where `view_series` is set to true to `node_array`
 function collect_viewable_nodes(node, node_array)  {
+<<<<<<< HEAD
 	//console.log("collect: "+node.name+" view_series:"+node.view_series);
 	if(node.view_series == true){
 		//console.log(node.name);
@@ -142,10 +150,13 @@ function collect_viewable_nodes(node, node_array)  {
 	}
 
 
+=======
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 }
 
 // TODO: make `node` no longer visible, but its immediate children visible (if a child, nothing to do) - modify `view_series`!
 function expand_node_view(node)  {
+<<<<<<< HEAD
 	if(node.children.length>0){
 		node.view_series = false;
 		for(var i = 0; i< node.children.length; i++){
@@ -155,20 +166,26 @@ function expand_node_view(node)  {
 		}
 	}
 
+=======
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 }
 
 // TODO: make the parent of `node` visible, but the subtree rooted at `node` should not be visible (hint `reset_node_views`) (if a parent, nothing to do) - modify `view_series`!
 function collapse_node_view(node)  {
+<<<<<<< HEAD
 		if (node.parent!=undefined){
 			
 			reset_node_views(node.parent);
 			node.parent.view_series = true;
 		}
 
+=======
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 }
 
 // TODO: does all of the visualization -> get the time series to view (`collect_viewable_nodes`), data join, setup interactions
 function visualize_time_series(root_node, is_collapsing, selected_node)  {
+<<<<<<< HEAD
 
 		
 
@@ -361,6 +378,26 @@ function visualize_time_series(root_node, is_collapsing, selected_node)  {
 }
 
 
+=======
+	var node_array = [];
+	collect_viewable_nodes(root_node, node_array);
+
+	// TODO: data join for line plot
+
+	// TODO: remove old series
+
+	// TODO: add new series
+
+	// TODO: setup interactions
+
+	// TODO: data join for text
+
+	// TODO: text labels - remove old ones (fade them out via opacity)
+
+	// TODO: text labels - add new ones (fade them in via opacity)
+}
+
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 function plot_it()  {
 	// some preprocessing
 	data_type_conversion(count_tree);
@@ -376,7 +413,10 @@ function plot_it()  {
 
 	// ... and then set the root node view to be true (have to view something to start!)
 	count_tree.view_series = true;
+<<<<<<< HEAD
 	//	count_tree.children[0].view_series = true;
+=======
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 
 	// visualization setup: width, height, padding, actual width and height
 	var width = 800, height = 800;
@@ -387,6 +427,7 @@ function plot_it()  {
 	d3.select('body').append('svg').attr('width', width).attr('height', height);
 	// add <g> transformation element to center the main plotting area by pad, assign it an id since we will be primarily selecting it
 	d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('id', 'mainplot');
+<<<<<<< HEAD
 	// add <rect> element to have a nice backdrop for  our plot!
 	d3.select('#mainplot').append('rect').attr('width', actual_width).attr('height', actual_height).attr('fill', '#999999').attr('opacity', 0.4)
 
@@ -422,4 +463,21 @@ function plot_it()  {
 	// visualize data!
 	visualize_time_series(count_tree, false);
 //	console.log(count_tree);
+=======
+	// add <rect> element to have a nice backdrop for our plot!
+	d3.select('#mainplot').append('rect').attr('width', actual_width).attr('height', actual_height).attr('fill', '#999999').attr('opacity', 0.4)
+
+	// TODO: setting up scales: we need to compute the minimum and maximum of our count data and dates; so first, lets get our count data from all nodes, then compute min/max
+
+	// TODO: for the min/max of dates, they are equivalent across nodes, so just map the root node's dates to an array, compute min and max
+
+	// TODO: compute the x and y scales for the line plots
+
+	// TODO: setup the line scale
+
+	// TODO: setup axes from the scales
+
+	// visualize data!
+	visualize_time_series(count_tree, false);
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 }
