@@ -29,13 +29,13 @@
 				.text('Question 2: How does bird size vary across different head patterns?')
 	
 			head_array =[]	
-			reformat_data = [];
+			reformat_data={};
 			for(var i =0; i< bird_data.length; i++){
 				head = bird_data[i].head_pattern
-				if(reformat_data[head] == undefined){
+				if( reformat_data[head]== undefined ){
 					size_array = [];
 					size_array.push(bird_data[i].bird_size)
-					reformat_data[head] = size_array;
+					reformat_data[head]=size_array
 					head_array.push(head);
 				}
 				else{
@@ -43,7 +43,7 @@
 
 				}
 			}
-//			console.log(reformat_data)				
+			console.log(reformat_data)				
 			num_group = head_array.length
 			group_scale_array = []
 			for(var i = 0; i<num_group;i++){
@@ -51,10 +51,22 @@
 			}
 			group_scale_x = d3.scaleBand().domain(head_array).range([0, actual_width])
 			group_band_width =group_scale_x.bandwidth()
-//			d3.selectAll('svg').data(bar
-//			d3.selectAll('svg').append('g').attr('transform', d = >
+			d3.selectAll('svg').data(reformat_data).append('g')
+			d3.selectAll('g').attr('transform', d => {
+															a in d; console.log(return a
+															}
+										)
 
 		}
+		function check_exist(string, array){
+			for(var i=0; i<array.length; i++){
+				name = array[i].name
+				if(string == name)
+					return true;
+			}
+			return false
+		}
+		function 
 	}
 /*
 
