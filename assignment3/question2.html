@@ -27,22 +27,35 @@
 			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')')
 			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
 				.text('Question 2: How does bird size vary across different head patterns?')
-		
-			var head_array = [];
-			var found = false;
-			for(var i =0; i< bird_data.length; i++)
-				found = false;
-				for(var j = 0; j<head_array.length; j++){
-					if(bird_data[i].head_pattern == head_array[j]){
-						found = true;
-						break;
+	
+			head_array =[]	
+			reformat_data = [];
+			for(var i =0; i< bird_data.length; i++){
+				head = bird_data[i].head_pattern
+				if(reformat_data[head] == undefined){
+					size_array = [];
+					size_array.push(bird_data[i].bird_size)
+					reformat_data[head] = size_array;
+					head_array.push(head);
 				}
-					head_array.push(bird_data.head_pattern);
-				}
+				else{
+					reformat_data[head].push(bird_data[i].bird_size)
 
-}
+				}
+			}
+//			console.log(reformat_data)				
+			num_group = head_array.length
+			group_scale_array = []
+			for(var i = 0; i<num_group;i++){
+				group_scale_array.push(i);
+			}
+			group_scale_x = d3.scaleBand().domain(head_array).range([0, actual_width])
+			group_band_width =group_scale_x.bandwidth()
+//			d3.selectAll('svg').data(bar
+//			d3.selectAll('svg').append('g').attr('transform', d = >
+
+		}
 	}
-
 /*
 
 Q: Why did you choose the particular mark(s)?
