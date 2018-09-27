@@ -54,14 +54,15 @@
 			for(var i = 0; i<num_group;i++){
 				group_scale_array.push(i);
 			}
-			group_scale_x = d3.scaleBand().domain(head_array).range([0, actual_width])
+			group_scale_x = d3.scaleBand().domain(head_array).range([pad, actual_width])
 			group_band_width =group_scale_x.bandwidth()
-			d3.selectAll('svg').selectAll('g').data(reformat_data).enter().append('g')
-			d3.selectAll('g').attr('transform', (d,i) => {
-															console.log('transform')
-															console.log(d.name)
-															console.log(group_scale_x(d.name))
-															//return group_scale_x(d.name)
+			d3.selectAll('g').selectAll('g').data(reformat_data).enter().append('g')
+																								.attr('class', 'group')
+			d3.selectAll('.group').attr('transform', (d,i) => {
+//															console.log('transform')
+															console.log(i)
+//															console.log(group_scale_x(d.name))
+															return 'translate('+group_scale_x(d.name)+', 0)'
 															}
 										)
 
