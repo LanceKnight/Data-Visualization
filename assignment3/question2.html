@@ -29,17 +29,22 @@
 				.text('Question 2: How does bird size vary across different head patterns?')
 	
 			head_array =[]	
-			reformat_data={};
+			reformat_data=[];
 			for(var i =0; i< bird_data.length; i++){
 				head = bird_data[i].head_pattern
-				if( reformat_data[head]== undefined ){
+				value = bird_data[i].bird_size;
+//				console.log('head:'+head)
+				if( check_exist(head, reformat_data)== false ){
+//					console.log('new head:'+head);
 					size_array = [];
 					size_array.push(bird_data[i].bird_size)
-					reformat_data[head]=size_array
+					tuple = {name:head, size:size_array}
+					reformat_data.push(tuple)
 					head_array.push(head);
 				}
 				else{
-					reformat_data[head].push(bird_data[i].bird_size)
+						console.log('about to update')
+						update_value(head, value, reformat_data)
 
 				}
 			}
@@ -53,7 +58,8 @@
 			group_band_width =group_scale_x.bandwidth()
 			d3.selectAll('svg').data(reformat_data).append('g')
 			d3.selectAll('g').attr('transform', d => {
-															a in d; console.log(return a
+															console.log(d.name)
+															return group_scale_x(d.name)
 															}
 										)
 
@@ -61,12 +67,20 @@
 		function check_exist(string, array){
 			for(var i=0; i<array.length; i++){
 				name = array[i].name
+//				console.log('name:'+name)
 				if(string == name)
 					return true;
 			}
 			return false
 		}
-		function 
+		function update_value(name, value, array){
+			for(var i = 0; i< array.length;i++){
+				if(name == array[i].name){
+					array[i].size.push(value)
+				}
+			}
+			
+		}
 	}
 /*
 
