@@ -57,14 +57,8 @@
 			group_scale_x = d3.scaleBand().domain(head_array).range([pad, actual_width])
 			group_band_width =group_scale_x.bandwidth()
 			d3.selectAll('g').selectAll('g').data(reformat_data).enter().append('g')
-																								.attr('class', 'group')
-			d3.selectAll('.group').attr('transform', (d,i) => {
-//															console.log('transform')
-															console.log(i)
-//															console.log(group_scale_x(d.name))
-															return 'translate('+group_scale_x(d.name)+', 0)'
-															}
-										)
+																								.attr('class', (d,i)=>'group '+ i)
+																								.attr('transform', (d,i) => 'translate('+group_scale_x(d.name)+', 0)')	
 
 		}
 		function check_exist(string, array){
