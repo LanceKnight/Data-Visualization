@@ -20,7 +20,7 @@
 		  })
 
 		function plot_it()  {
-			var width = 700, height = 700;
+			var width = 1200, height = 2600;
 			var pad = 80;
 			var actual_width = width-2*pad, actual_height = height-2*pad;
 			d3.select('body').append('svg').attr('width', width).attr('height', height)
@@ -31,13 +31,67 @@
 
 		wing_array =[]
 		size_array =[]
-		for(var i = 0; var 
+		head_array =[]
+		pattern_array = []
+		head=d3.nest().key(d=>d.head_pattern).entries(bird_data)
+		pattern=d3.nest().key(d=>d.wing_pattern).entries(bird_data)
+		data = d3.nest().key(d=>d.head_pattern).key(d=>d.wing_pattern).entries(bird_data)
+		for(var i = 0; i<head.length; i++){
+			head_array.push(head[i].key)	
+		}
+			
+		for(var i = 0; i<pattern.length; i++){
+			pattern_array.push(pattern[i].key)	
+		}
+			
+		
+		group_scale_x = d3.scaleBand().domain(pattern_array).range([0,actual_width])
+		group_scale_x.paddingInner(0.1)
+		x_band = group_scale_x.bandwidth()
+		group_scale_y = d3.scaleBand().domain(head_array).range([actual_height, 0])
+		group_scale_y.paddingInner(0.1)
+		y_band = group_scale_y.bandwidth()
+		console.log(group_scale_y('plain'))
+
+		console.log(group_scale_y.bandwidth())
+
+
+		
+		s=d3.selectAll('g').selectAll('x').data(data).enter().append('g')
+																					.attr('transform',d=>{//console.log(group_scale_y(d.key));
+																											return'translate('+0+','+group_scale_y(d.key)+')'})
+																					.attr('class', 'subploty')
+		s.selectAll('x').data(d=>{//console.log(d.values)
+											return d.values}).enter().append('g')
+																					.attr('transform',d=>{//console.log(group_scale_x(d.key));
+																												return'translate('+group_scale_x(d.key)+','+0+')'})
+																					.attr('class', 'subplotx')
+
+//		d3.selectAll('.subploty').append('rect').attr('width', x_band).attr('height',y_band).attr('fill','lightblue')
+		
+		d3.selectAll('.subplotx').append('rect').attr('width', x_band).attr('height',y_band).attr('fill','lightblue')
+		
+
+	/*	
+		for(var i = 0; i<bird_data.length;i++){
+			wing_array.push(bird_data[i].wing_length)
+			size_array.push(bird_data[i].bird_size)
+		}
+		min_x = d3.min(wing_array), max_x = d3.max(wing_array)
+		min_y = d3.min(size_array), max_y = d3.max(size_array)
+	
+		scale_x = d3.scaleLinear().domain([min_x,max_x]).range([0,actual_width]) 
+		scale_y = d3.scaleLinear().domain([min_y,max_y]).range([actual_height,0])
+		
+		accent = d3.scaleOrdinal(d3.schemeAccent)
+		 
 
 		d3.selectAll('g').selectAll('circle').data(bird_data).enter().append('circle')
-																				.attr('cx')
+																				.attr('cx', d=>scale_x(d.wing_length))
+																				.attr('cy', d=>scale_y(d.bird_size))
+																				.attr('r',10)
 
-
-
+*/
 
 
 
