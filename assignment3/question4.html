@@ -70,18 +70,19 @@
 																					.attr('transform',d=>{//console.log(group_scale_y(d.key));
 																											return'translate('+0+','+group_scale_y(d.key)+')'})
 																					.attr('class', 'subploty')
-
-
+//		s.selectAll('x').data(d=>{console.log(d.key);return d.key}).enter().append('g').attr('id', 'yaxis').attr('transform', 'translate('+0+','+y_band+')').call(d3.axisLeft(group_scale_y))
+		
 		s1=s.selectAll('x').data(d=>{//console.log(d.values)
 											return d.values}).enter().append('g')
 																					.attr('transform',d=>{//console.log(group_scale_x(d.key));
 																												return'translate('+group_scale_x(d.key)+','+0+')'})
 																					.attr('class', 'subplotx')
 																					
-		s1.append('g').attr('id', d=>{console.log(d)})
+		s1.selectAll('x').data(d=>{console.log(d.values);return d.values}).enter().append('g').attr('id', d=>{console.log(d);return d}).attr('transform', 'translate('+0+','+y_band+')').call(d3.axisBottom(scale_x))
+
 		d3.selectAll('.subplotx').append('rect').attr('width', x_band).attr('height',y_band).attr('fill','lightblue').attr('opacity',0.4)
 
-		s1.selectAll('x').data(d=>{console.log(d.values);return d.values}).enter().append('circle')
+		s1.selectAll('x').data(d=>d.values).enter().append('circle')
 																				.attr('cx', d=>{return scale_x(d.wing_length)})
 																				.attr('cy', d=>scale_y(d.bird_size))
 																				.attr('r',r)
