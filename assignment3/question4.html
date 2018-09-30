@@ -95,14 +95,15 @@
 																					.attr('cy', d=>scale_y(d.bird_size))
 																					.attr('r',r)
 	//y group label
-			d3.select('.basegroup').selectAll('x').data(data).enter().append('text').text(d=>{console.log(d.key);return d.key}).attr('transform', d=>'translate('+(-70)+','+(group_scale_y(d.key)+y_band/1.7)+') rotate(-90)')
-
-			s.selectAll('x').data(d=>{console.log(d);
-									return d.values}).enter().append('text').text(d=>d.key).attr('transform', d=>'translate('+group_scale_x(d.key)+','+0+') rotate(0)')
+			d3.select('.basegroup').selectAll('x').data(data).enter().append('text').text(d=>{console.log(d.key);return d.key}).attr('transform', d=>'translate('+(-60)+','+(group_scale_y(d.key)+y_band/1.7)+') rotate(-90)').attr('font-size','30px')
+		
+			data2 = d3.nest().key(d=>d.wing_pattern).entries(bird_data)
+			d3.select('svg').selectAll('x').data(data2).enter().append('text').text(d=>d.key).attr('transform', d=>'translate('+(150+group_scale_x(d.key))+','+'50)').attr('font-size','30px')
+	//		s.selectAll('x').data(d=>{console.log(d);return d.values}).enter().append('text').text(d=>d.key).attr('transform', d=>'translate('+group_scale_x(d.key)+','+0+') rotate(0)')
 		//x label	
 			s.selectAll('x').data(d=>d.values).enter().append('text').text('Wing Length').attr('transform', d=>'translate('+(group_scale_x(d.key)+x_band/2-30)+','+(y_band+30)+') rotate(0)').attr('id', 'x label')
 		//ylabel
-			s.selectAll('x').data(d=>d.values).enter().append('text').text('Bird Size').attr('transform', d=>'translate('+(group_scale_x(d.key)-30)+','+(y_band/2+30)+') rotate(-90)').attr('id', 'test')
+			s.selectAll('x').data(d=>d.values).enter().append('text').text('Bird Size').attr('transform', d=>'translate('+(group_scale_x(d.key)-30)+','+(y_band/2+30)+') rotate(-90)').attr('id', 'y label')
 			s.selectAll('test')
 
 
@@ -134,16 +135,16 @@
 /*
 
 Q: Why did you choose the particular mark(s)?
-A: 
+A: I chose dot as my mark because it is easy to show the relationship if there is any between two quantitative values. 
 
 Q: Why did you choose the particular channels?
-A: 
+A: I chose x, y as my channel. I used them in two ways. One for group x, y, each represents a categorical data. Then for each subplot, the x, y represents quantatative data.
 
 Q: Why is your design good in helping to answer the question?
-A: 
+A: One can easily query a certain combination of two categorical data and then look at the subplot to find the relationship he wants.
 
 Q: What are the limitations of your design in attempting to answer the question?
-A: 
+A:The scales are the same for all subplot. It is easy to compare between subpolts but some subplots have most dots clustered together.
 
 */
 	</script>
