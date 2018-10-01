@@ -24,7 +24,7 @@
 			var pad = 80;
 			var actual_width = width-2*pad, actual_height = height-2*pad;
 			d3.select('body').append('svg').attr('width', width).attr('height', height)
-			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')')
+			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('class', 'basegroup')
 			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
 				.text('Question 2: How does bird size vary across different head patterns?')
 	
@@ -79,8 +79,11 @@
 																							.text(d=>d.name)
 																						//	.attr('x',d =>pad +group_scale_x(d.name))
 																						//	.attr('y',d =>actual_height+pad+20)
-																							.attr('transform', d=>'translate('+(pad+group_scale_x(d.name))+','+(pad+actual_height+20)+ ') rotate(45)')
+			
+																				.attr('transform', d=>'translate('+(pad+group_scale_x(d.name))+','+(pad+actual_height+20)+ ') rotate(45)')
 
+			//add x label
+			d3.select('.basegroup').append('text').text('Head Pattern').attr('transform','translate('+actual_width/2+','+(actual_height+pad)+')')
 			d3.select('svg').append('g')
 										.attr('transform', 'translate(80,80)')
 										.call(d3.axisLeft(scale_y))

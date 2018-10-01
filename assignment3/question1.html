@@ -49,6 +49,7 @@
 							.attr('cx', d=>x_scale(d.bird_size))
 							.attr('cy', d=>y_scale(d.wing_length))
 							.attr('r', r)
+							.attr('fill', 'red')
 			
 			d3.selectAll('#main').append('g')
 					.attr('id', 'bottomaxis')

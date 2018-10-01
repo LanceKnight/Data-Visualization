@@ -106,6 +106,7 @@
 			s.selectAll('x').data(d=>d.values).enter().append('text').text('Bird Size').attr('transform', d=>'translate('+(group_scale_x(d.key)-30)+','+(y_band/2+30)+') rotate(-90)').attr('id', 'y label')
 			s.selectAll('test')
 
+			d3.selectAll('circle').attr('fill', 'red')
 
 	//		d3.selectAll('svg').append('circle').attr('cx',100).attr('cy',100).attr('r',10)
 

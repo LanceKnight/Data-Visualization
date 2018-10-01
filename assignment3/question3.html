@@ -62,7 +62,7 @@
 
 		min_y = d3.min(wing_array)
 		max_y = d3.max(wing_array)
-		scale_y = d3.scaleLinear().domain([min_y, max_y]).range([0,group_x_band])
+		scale_y = d3.scaleLinear().domain([min_y, max_y]).range([group_x_band,0])
 		
 		color_scale = d3.scaleOrdinal(d3.schemeCategory10)
 
@@ -77,10 +77,10 @@
 														//		.attr('width', x_band)
 														//		.attr('height', d=>{console.log(d.wing_length);return scale_y(d.wing_length)})
 																.attr('x1', 0)
-																.attr('y1', d=>group_x_band-scale_y(d.wing_length))
+																.attr('y1', d=>scale_y(d.wing_length))
 																.attr('x2', x_band)
-																.attr('y2', d=>group_x_band-scale_y(d.wing_length))
-//																.attr('transform',d=>'translate(0,'+(group_x_band-scale_y(d.wing_length))+')')
+																.attr('y2', d=>{console.log(d.wing_pattern + ':'+d.wing_length); return scale_y(d.wing_length)})
+														//		.attr('transform',d=>{console.log(d.wing_length);return 'translate(0,'+(scale_y(d.wing_length))+')'})
 																.attr('style',d=>{
 																			a = color_scale(pattern_array.indexOf(d.wing_pattern))
 																			console.log(a);return 'stroke:'+a+'; stroke-width:1'})
