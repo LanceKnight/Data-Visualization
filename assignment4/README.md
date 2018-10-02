@@ -13,7 +13,7 @@ You will be provided a dataset of Abalone, a type of sea shell. Each item has a 
 * shucked weight
 * viscera weight
 
-You can [download the dataset here](box).
+You can [download the dataset here](https://vanderbilt.box.com/s/8rczciarwm3fow6a9p4xkor70absdo81).
 
 In the boilerplate code, at the top there are 2 parameters: `selected_atts` and `num_points`, which refer to an array of named dimensions that we can select, and the number of points to plot, respectively. For debugging and experimental purposes, you may want to consider adjusting each of these.
 
