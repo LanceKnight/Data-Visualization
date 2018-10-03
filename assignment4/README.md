@@ -68,6 +68,7 @@ Last, since choosing a bandwidth for density estimation is quite tricky, this sh
 	* Then figure out how to determine what points belong in the rectangle (simple containment test), gather those points, and update their appearance across all visual encodings.
 * **Use keys in the data join to help with selecting the elements you want to update across all views.**
 * (for grad students) Keyboard strokes can be listened to via the 'keydown' event, applied to the main svg element. You will also need to register a 'focus' event, with an empty function, to ensure that the svg element listens for key strokes.
+* Perform a point-in-rectangle test to see if a point lies in a selection; don't worry about circle-rectangle tests.
 * To get a mouse position: `d3.mouse(node)`, for some arbitrary `node`. Returns mouse position with respect to the coordinate system of `node`.
 
 ## A note on D3 and Brushing
