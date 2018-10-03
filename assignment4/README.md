@@ -1,6 +1,6 @@
 # Assignment 4
 
-In this assignment you will be using a scatterplot matrix and parallel coordinates to visualize multidimensional data. Moreover, the two interfaces will be linked together via brushing, so that we can understand the relationship between their visual patterns. The main javascript code that you will be starting from for this assignment can be found in [http://localhost:8000/assignment5/linked_visualizations.js](http://localhost:8000/assignment5/linked_visualizations.js).
+In this assignment you will be using a scatterplot matrix and parallel coordinates to visualize multidimensional data. Moreover, the two interfaces will be linked together via brushing, so that we can understand the relationship between their visual patterns. The main javascript code that you will be starting from for this assignment can be found in [http://localhost:8000/assignment4/linked_visualizations.js](http://localhost:8000/assignment4/linked_visualizations.js).
 
 ## Data
 
