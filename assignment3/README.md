@@ -55,7 +55,7 @@ For each question you will design a visualization that allows the user to help a
 * For some of these questions, you will find that multiple bird species might map to the same combination of categories (e.g. there are multiple bird species for "solid" wing pattern and "capped" head pattern). In the case of quantitative data, you might want to aggregate such a set of bird species into a single quantitative value - namely, **compute the mean**. However, you are also free to directly visualize the individual species. The choice is up to you.
 * Furthermore, there might be some combinations of categories that yield no birds (like "spotted" wing pattern and "crested" head pattern). This is fine, your visualization should be able to show this as empty.
 * If you so choose to use positional grouping or faceted grouping, you may find [d3.nest()](https://github.com/d3/d3-collection#nests) to be extremely handy. Please consult the d3 documentation for more information, as well as [Mr Nester](http://bl.ocks.org/shancarter/raw/4748131/) for experimentation.
-* Recall `d3.bandScale()`. We went over this in some detail in class. You may find this very useful.
+* Recall `d3.scaleBand()`. We went over this in some detail in class. You may find this very useful.
 * If you choose to use color, then please refer to [d3-color](https://github.com/d3/d3-color) and [d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic) for further information on how to work with color spaces, and color maps, using D3.
 * Feel free to change anything in the starter code as you see fit: width and length of the svg element, padding, etc..
 
