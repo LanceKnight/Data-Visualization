@@ -14,6 +14,30 @@
 			  abalone_data = data;
 			  plot_it();
 		  })
+		
+		function plot_it(){
+			height = 800; width = 2 * height
+			padding = 80
+			actual_height = height - 2*padding; actual_width = actual_height
+			d3.select('body').append('svg')
+			left = d3.select('svg').append('g').attr('id','scatter_plot').attr('transform', 'translate('+padding+','+padding+')')
+			right = d3.select('svg').append('g').attr('id','parallel_plot').attr('transform', 'translate('+(padding+2*padding)+','+padding+')')
+			
+			domainByTrait = {}
+				traits = d3.keys(abalone_data[0])
+			traits.forEach(function(trait){
+				domainByTrait[trait] = d3.extent(abalone_data, d => d[trait]);
+			});
+			n = traits.length
+
+
+			left.selectAll('x_axis')
+					.data(traits)
+				.enter().append('g')
+				.attr('transform', (d,i) => 'translate('+(n-i-1)*size + ',0)')
+
+
+		}
 	</script>
 	</body>
 </html>
