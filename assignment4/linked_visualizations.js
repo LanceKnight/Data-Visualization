@@ -2,7 +2,7 @@ var abalone_data;
 
 // all dimensions: 'length', 'height', 'shucked weight', 'diameter', 'whole weight', 'viscera weight', 'rings'
 var selected_atts = ['length', 'height', 'shucked weight', 'diameter', 'whole weight', 'viscera weight', 'rings'];
-var selected_atts = ['length', 'height', 'shucked weight','diameter']//this is for debugging
+var selected_atts = ['length', 'height', 'shucked weight','diameter', 'whole weight']//this is for debugging
 var num_points = 800
 var num_points = 20//this is for dubugging
 
@@ -21,19 +21,25 @@ function plot_it()  {
 		abalone_data.push({key:i,value:shuffled_data[i]});
 
 //my codes
-		height = 800; width = 2 * height
-		padding = 80
-		innerpad = 0.3
-		actual_height = height - 2*padding; actual_width = actual_height
+		padding = 40
+		height = 1000; width = 2 * height
+		
+		group_innerpad = 0.1
+		group_height = height - padding; group_width = group_height		
+		scale_group_x = d3.scaleBand().domain(selected_atts).range([0,group_width])
+		scale_group_y = d3.scaleBand().domain(selected_atts).range([0,group_height])
+		scale_group_x.paddingInner(group_innerpad)
+		scale_group_y.paddingInner(group_innerpad)
+		
+		g_width = scale_group_x.bandwidth();g_height = scale_group_y.bandwidth()
+
+		plot_padding = 10
+		plot_height = g_height -plot_padding; plot_width = g_width - plot_padding
+
 		r = 3
 
-		scale_group_x = d3.scaleBand().domain(selected_atts).range([0,actual_width])
-		scale_group_y = d3.scaleBand().domain(selected_atts).range([0,actual_height])
-		scale_group_x.paddingInner(innerpad)
-		scale_group_y.paddingInner(innerpad)
-		x_width = scale_group_x.bandwidth()
-		x = d3.scaleLinear().range([r, x_width-r])
-		y = d3.scaleLinear().range([x_width-r,r])
+		x = d3.scaleLinear().range([r, plot_width-r])
+		y = d3.scaleLinear().range([plot_height-r,r])
 		xAxis = d3.axisBottom()
 					.scale(x)
 					
@@ -41,7 +47,7 @@ function plot_it()  {
 		
 		d3.select('body').append('svg').attr('width', width).attr('height',height)
 		left = d3.select('svg').append('g').attr('id','scatter_plot').attr('transform', 'translate('+padding+','+padding+')')
-		right = d3.select('svg').append('g').attr('id','parallel_plot').attr('transform', 'translate('+(actual_width+2*padding)+','+padding+')')
+		right = d3.select('svg').append('g').attr('id','parallel_plot').attr('transform', 'translate('+(group_width+2*padding)+','+padding+')')
 		
 		domainByTrait={}
 		selected_atts.forEach(function(attr) {
@@ -78,8 +84,8 @@ function plot_it()  {
 																			d3.select(this).append('rect')
 																								.attr('fill', 'lightblue')
 																								.attr('opacity', 0.3)
-																								.attr('width', x_width)
-																								.attr('height', x_width)
+																								.attr('width', plot_width)
+																								.attr('height', plot_height)
 																			
 																			//add data points
 																			d3.select(this).selectAll('circle').data(abalone_data).enter().append('circle')
@@ -89,6 +95,11 @@ function plot_it()  {
 																			
 																			
 																			//add label
+																			d3.select(this).append('text').text(x_attr).attr('transform', 'translate('+30+','+g_width+40+')')
+	
+																			d3.select(this).append('text').text(y_attr).attr('transform', 'translate(0,'+100+') rotate(-90)')
+																			
+																			
 																			return d
 																			})
 	
