@@ -92,6 +92,7 @@ function plot_it()  {
 																																						.attr('cx', d2=>{return x(d2.value[x_attr])})
 																																						.attr('cy', d2=>{return y(d2.value[y_attr])})
 																																						.attr('r', 3)
+																																						.attr('opacity',0.2)
 																			
 																			
 																			//add label
