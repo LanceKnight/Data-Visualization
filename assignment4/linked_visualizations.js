@@ -24,7 +24,7 @@ function plot_it()  {
 		padding = 40
 		height = 1000; width = 2 * height
 		
-		group_innerpad = 0.1
+		group_innerpad = 0.23
 		group_height = height - padding; group_width = group_height		
 		scale_group_x = d3.scaleBand().domain(selected_atts).range([0,group_width])
 		scale_group_y = d3.scaleBand().domain(selected_atts).range([0,group_height])
@@ -95,11 +95,15 @@ function plot_it()  {
 																			
 																			
 																			//add label
-																			d3.select(this).append('text').text(x_attr).attr('transform', 'translate('+30+','+g_width+40+')')
+																			d3.select(this).append('text').text(x_attr).attr('transform', 'translate('+30+','+(g_width+22)+')')
 	
-																			d3.select(this).append('text').text(y_attr).attr('transform', 'translate(0,'+100+') rotate(-90)')
+																			d3.select(this).append('text').text(y_attr).attr('transform', 'translate('+ -30 +','+100+') rotate(-90)')
 																			
+																			//add axes
+																			d3.select(this).append('g').attr('transform', 'translate(0,0)').call(d3.axisLeft(x))
 																			
+																			d3.select(this).append('g').attr('transform', 'translate(0,'+plot_height+')').call(d3.axisBottom(y))
+																
 																			return d
 																			})
 	
