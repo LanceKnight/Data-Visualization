@@ -109,9 +109,12 @@ function plot_it()  {
 																			})
 	
 
-//				.attr('transform', (d,i) => 'translate('+scale_group(d) + ',0)')
-//				.each( d=>{x.domain(domainByTrait[d]) }).call(xAxis)
-		
-
+	s1 = d3.select('#parallel_plot').selectAll('line').data(selected_atts).enter().append('line')
+																												.attr('transform', d=>'translate(' +scale_group_x(d)+',0)')
+																												.attr('x1',0)
+																												.attr('x2',0)
+																												.attr('y1',0)
+																												.attr('y2',	group_height-g_width)
+																												.attr('style', 'stroke:rgb(0,0,0);stroke-width:2')
 
 }
