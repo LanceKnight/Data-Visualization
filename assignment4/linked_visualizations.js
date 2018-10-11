@@ -84,8 +84,9 @@ function plot_it()  {
 
 	click_x = 0
 	click_y = 0
-	release_x = 0
-	release_y = 0	
+	move_x = 0
+	move_y = 0	
+	draw = false
 
 	s=	d3.selectAll('#scatter_plot').selectAll('g').data(combo).enter().append('g').attr('id','subplot').attr('transform',d=>'translate(' +scale_group_x(d['x_attr']) +','+scale_group_y(d['y_attr'])+')').each(function(d,i,g){
 																			//console.log(d)	
@@ -98,68 +99,15 @@ function plot_it()  {
 																			x.domain(x_domain)
 																			y.domain(y_domain)
 																					
-																			d3.select(this).append('rect')
+																			d3.select(this).append('g')
+																								.attr('id','drawing_panel')
+																								.append('rect')
 																								.attr('fill', 'lightblue')
 																								.attr('opacity', 0.3)
 																								.attr('width', plot_width)
 																								.attr('height', plot_height)
 																								
-																							.on('mousemove', function(d){
-
-																									[click_x,click_y] = d3.mouse(this)
-																									//console.log('clicked')
-																									//console.log('x:'+click_x)
-																									//console.log('y:'+click_y)
-																									x_attr = d.x_attr
-																									y_attr = d.y_attr
 																							
-																									x_domain = domainByTrait[x_attr]
-																									y_domain = domainByTrait[y_attr]
-																									x.domain(x_domain)
-																									y.domain(y_domain)
-
-																									
-																																													
-					
-																									for(i=0;i<abalone_data.length;i++){
-																												data_x = abalone_data[i].value[x_attr]
-																												data_y = abalone_data[i].value[y_attr]
-																												scale_x = x(data_x)
-																												scale_y = y(data_y)
-																									}
-
-
-
-																								})
-																							.on('mousedown', function(d){
-																									[click_x,click_y] = d3.mouse(this)
-																									console.log('clicked')
-																									console.log('x:'+click_x)
-																									console.log('y:'+click_y)
-																									this.append('rect')
-																											.attr('x',click_x)
-																											.attr('y',click_y)
-																											.attr('id','brush')
-																									x_attr = d.x_attr
-																									y_attr = d.y_attr
-																							
-																									x_domain = domainByTrait[x_attr]
-																									y_domain = domainByTrait[y_attr]
-																									x.domain(x_domain)
-																									y.domain(y_domain)
-
-																									
-																																													
-					
-																									for(i=0;i<abalone_data.length;i++){
-																												data_x = abalone_data[i].value[x_attr]
-																												data_y = abalone_data[i].value[y_attr]
-																												scale_x = x(data_x)
-																												scale_y = y(data_y)
-
-																									}
-
-																							})
 
 																								
 
@@ -167,7 +115,7 @@ function plot_it()  {
 
 
 																			//add data points
-																			d3.select(this).selectAll('circle').data(abalone_data).enter().append('circle')
+																			d3.selectAll('#drawing_panel').selectAll('circle').data(abalone_data).enter().append('circle')
 																																						.attr('cx', d2=>{return x(d2.value[x_attr])})
 																																						.attr('cy', d2=>{return y(d2.value[y_attr])})
 																																						.attr('r', 3)
@@ -187,6 +135,114 @@ function plot_it()  {
 																			return d
 																			})
 																			
+															d3.selectAll('#drawing_panel').on('mousemove', function(d){
+																									console.log('mousemove');
+																									[move_x,move_y] = d3.mouse(this)
+																									//console.log('clicked')
+																									//console.log('x:'+click_x)
+																									//console.log('y:'+click_y)
+																									x_attr = d.x_attr
+																									y_attr = d.y_attr
+																							
+																									x_domain = domainByTrait[x_attr]
+																									y_domain = domainByTrait[y_attr]
+																									x.domain(x_domain)
+																									y.domain(y_domain)
+																									if(draw == true){
+																										if(move_x >click_x){
+
+																												d3.selectAll('#brush')
+																																.attr('width', Math.abs(click_x-move_x))
+																												if(move_y>click_y){
+																													d3.selectAll('#brush')
+																																.attr('height', Math.abs(click_y-move_y))
+
+																												}
+																												else{
+																														
+																													d3.selectAll('#brush')
+																																.attr('y', move_y)
+																																.attr('height', Math.abs(click_y-move_y))
+																												}
+
+																										}
+																										else{
+																												d3.selectAll('#brush')
+																																.attr('x',move_x)
+																												
+																																.attr('width', Math.abs(click_x-move_x))
+																												if(move_y>click_y){
+																													d3.selectAll('#brush')
+																																.attr('height', Math.abs(click_y-move_y))
+
+																												}
+																												else{
+																														
+																													d3.selectAll('#brush')
+																																.attr('y', move_y)
+																																.attr('height', Math.abs(click_y-move_y))
+																												}
+	
+
+
+																										}
+																										
+																								//	d3.selectAll('#brush')
+																								//								.attr('width', Math.abs(click_x-move_x))
+																								//								.attr('height', Math.abs(click_y-move_y))
+																									}															
+					
+																									for(i=0;i<abalone_data.length;i++){
+																												data_x = abalone_data[i].value[x_attr]
+																												data_y = abalone_data[i].value[y_attr]
+																												scale_x = x(data_x)
+																												scale_y = y(data_y)
+																									}
+
+
+
+																								})
+																							.on('mousedown', function(d){
+																									draw = true
+																									console.log('mouse down');																							
+																									[click_x,click_y] = d3.mouse(this)
+																								//	console.log('clicked')
+																								//	console.log('x:'+click_x)
+																								//	console.log('y:'+click_y)
+																									d3.selectAll('#brush').remove()
+																									d3.select(this).append('rect')
+																											.attr('x',click_x)
+																											.attr('y',click_y)
+																											.attr('id','brush')
+																											.attr('fill','red')
+																											.attr('opacity', opacity)
+																									x_attr = d.x_attr
+																									y_attr = d.y_attr
+																							
+																									x_domain = domainByTrait[x_attr]
+																									y_domain = domainByTrait[y_attr]
+																									x.domain(x_domain)
+																									y.domain(y_domain)
+
+																									
+																																													
+					
+																									for(i=0;i<abalone_data.length;i++){
+																												data_x = abalone_data[i].value[x_attr]
+																												data_y = abalone_data[i].value[y_attr]
+																												scale_x = x(data_x)
+																												scale_y = y(data_y)
+
+																									}
+																							})
+																							.on('mouseup', function(d){
+																								draw = false;
+																								console.log('mouseup')
+																							})
+																							.on('mouseleave',function(d){
+																								console.log('mouseout')
+																								draw = false;
+																							})
 
 
 	assembly_data =[]
