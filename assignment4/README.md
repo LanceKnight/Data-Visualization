@@ -64,7 +64,7 @@ D3 has support of various kinds for brushing, however _you are not to use D3's b
 
 ## Hand-in
 
-Zip up the `assignment5` directory with all source files (html, javascript, css, etc..) and submit it to Brightspace.
+Zip up the `assignment4` directory with all source files (html, javascript, css, etc..) and submit it to Brightspace.
 
 ## Grading
 
