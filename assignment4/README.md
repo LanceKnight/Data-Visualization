@@ -44,18 +44,6 @@ The user should be able to brush a rectangle on _any_ of the scatterplots to per
 
 The selection must also be clear: choose colors for selection that are distinct with respect to the colors used in the scatterplot matrix and parallel coordinates.
 
-## Kernel Density Estimation (Graduate Students only)
-
-Using opacity to help convey density has its limitations: low density points will have be difficult to see if we want to show high density regions, and vice versa. One way of addressing this is to estimate the density at each point, and then color map each point by the density. Thus we do not need to use opacity to show density, or at the very least not be as reliant on it.
-
-To this end, you are to implement a kernel density estimation technique, in order to associate each data point with a density. You can use any kernel you wish, though a Gaussian kernel with a user-specified bandwidth would be just fine. Please see [this paper](http://www.ii.uib.no/vis_old/publications/pdfs/lampe11kde.pdf) for a discussion on kernel density estimation within the context of visualization; in particular, see Equations 1 and 2 for the specific form that you should implement. Then you are to use an appropriate (hint: **sequential**) color map to convey the density at each point.
-
-Note: kernel density estimation is to be computed on the original dataset, **not the visual representations** (e.g. scatterplots, parallel coordinates). Thus, the same color-mapped density will be used for scatterplots and parallel coordinates.
-
-Furthermore, you will need to choose an appropriate color for selection that does not interfere with the color map for the estimated density.
-
-Last, since choosing a bandwidth for density estimation is quite tricky, this should be a **tunable parameter** that the user adjusts during interaction. To this end, if the user presses the `j` key (key code 74) the bandwidth should decrease, and if they press `k` (key code 75) the bandwidth should increase. Subsequently, the colors for all points/poly-lines should update. You do not need to have the density estimation run in real-time, e.g. it should incur at most 1-2 seconds of latency for 500 points.
-
 ## Suggestions
 
 * You should first focus on setting up your plot regions (e.g. svg groups) in the scatterplot matrix. Consider using `scaleBand` for this purpose.
@@ -67,7 +55,6 @@ Last, since choosing a bandwidth for density estimation is quite tricky, this sh
 	* Make sure you can dynamically draw a rectangle over any of the scatterplots.
 	* Then figure out how to determine what points belong in the rectangle (simple containment test), gather those points, and update their appearance across all visual encodings.
 * **Use keys in the data join to help with selecting the elements you want to update across all views.**
-* (for grad students) Keyboard strokes can be listened to via the 'keydown' event, applied to the main svg element. You will also need to register a 'focus' event, with an empty function, to ensure that the svg element listens for key strokes.
 * Perform a point-in-rectangle test to see if a point lies in a selection; don't worry about circle-rectangle tests.
 * To get a mouse position: `d3.mouse(node)`, for some arbitrary `node`. Returns mouse position with respect to the coordinate system of `node`.
 
@@ -93,9 +80,3 @@ Zip up the `assignment5` directory with all source files (html, javascript, css,
 	* 10 points: update polylines corresponding to user-selected items
 	* 5 points: update elements when user performs new selection (namely, revert back to original visual encoding for the previous selection)
 	* 5 points: ensure selected points/poly-lines are clearly shown
-* 30 points: Kernel Density Estimation
-	* 20 points: compute a density estimate for each data item
-	* 5 points: associate color map with density, color points/poly-lines based on color map
-	* 5 points: support interactive updating of bandwidth
-
-Please note for graduate students: your grade is out of 130 points, but still counts as the same amount as any other assignment in its contribution towards your overall grade.
