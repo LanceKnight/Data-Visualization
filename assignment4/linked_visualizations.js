@@ -50,7 +50,7 @@ function plot_it()  {
 									parallel_y.domain(y_domain)
 									return scale_group_x(d.attr)
 								})
-						.y(d=>{console.log(d);return parallel_y(d.value)})				
+						.y(d=>{return parallel_y(d.value)})				
 			
 		d3.select('body').append('svg').attr('width', width).attr('height',height)
 		left = d3.select('svg').append('g').attr('id','scatter_plot').attr('transform', 'translate('+padding+','+padding+')')
@@ -115,12 +115,12 @@ function plot_it()  {
 
 
 																			//add data points
-																			d3.selectAll('#drawing_panel').selectAll('circle').data(abalone_data).enter().append('circle')
+																			d3.selectAll('#drawing_panel').selectAll('circle').data(abalone_data,d=>d.key).enter().append('circle')
 																																						.attr('cx', d2=>{return x(d2.value[x_attr])})
 																																						.attr('cy', d2=>{return y(d2.value[y_attr])})
 																																						.attr('r', 3)
 																																						.attr('opacity',opacity)
-																			
+																																						.attr('fill', 'red')
 																			
 																			//add label
 																			d3.select(this).append('text').text(x_attr).attr('transform', 'translate('+30+','+(g_width+22)+')')
@@ -136,7 +136,7 @@ function plot_it()  {
 																			})
 																			
 															d3.selectAll('#drawing_panel').on('mousemove', function(d){
-																									console.log('mousemove');
+																								//	console.log('mousemove');
 																									[move_x,move_y] = d3.mouse(this)
 																									//console.log('clicked')
 																									//console.log('x:'+click_x)
@@ -187,24 +187,83 @@ function plot_it()  {
 
 																										}
 																										
-																								//	d3.selectAll('#brush')
-																								//								.attr('width', Math.abs(click_x-move_x))
-																								//								.attr('height', Math.abs(click_y-move_y))
-																									}															
-					
+																									
 																									for(i=0;i<abalone_data.length;i++){
 																												data_x = abalone_data[i].value[x_attr]
 																												data_y = abalone_data[i].value[y_attr]
 																												scale_x = x(data_x)
 																												scale_y = y(data_y)
+																												if(move_x>click_x){
+																													if(move_y>click_y){
+																														if((scale_x<move_x) &&(scale_x>click_x)&&(scale_y<move_y)&&(scale_y>click_y)){
+																															console.log(abalone_data[i])
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
+
+																														}
+																														else{
+
+																														
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
+																														}
+																													}
+																													else{
+
+																														if((scale_x<move_x) &&(scale_x>click_x)&&(scale_y>move_y)&&(scale_y<click_y)){
+																															console.log(abalone_data[i])
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
+
+																														}
+																														else{
+
+																														
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
+																														}
+																													}
+
+																												}
+																												else{
+
+																													if(move_y>click_y){
+
+																														if((scale_x>move_x) &&(scale_x<click_x)&&(scale_y<move_y)&&(scale_y>click_y)){
+																															console.log(abalone_data[i])
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
+
+																														}
+																														else{
+
+																														
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
+																														}
+																													}
+																													else{
+
+																														if((scale_x>move_x) &&(scale_x<click_x)&&(scale_y>move_y)&&(scale_y<click_y)){
+																															console.log(abalone_data[i])
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
+
+																														}
+																														else{
+
+																														
+																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
+																														}
+																													}
+																												}
+
 																									}
+
+
+
+																									}	//if(draw==true)														
+					
 
 
 
 																								})
 																							.on('mousedown', function(d){
-																									draw = true
-																									console.log('mouse down');																							
+																									draw = true;
+																								//	console.log('mouse down');																							
 																									[click_x,click_y] = d3.mouse(this)
 																								//	console.log('clicked')
 																								//	console.log('x:'+click_x)
@@ -227,20 +286,13 @@ function plot_it()  {
 																									
 																																													
 					
-																									for(i=0;i<abalone_data.length;i++){
-																												data_x = abalone_data[i].value[x_attr]
-																												data_y = abalone_data[i].value[y_attr]
-																												scale_x = x(data_x)
-																												scale_y = y(data_y)
-
-																									}
 																							})
 																							.on('mouseup', function(d){
 																								draw = false;
-																								console.log('mouseup')
+																						//		console.log('mouseup')
 																							})
 																							.on('mouseleave',function(d){
-																								console.log('mouseout')
+																						//		console.log('mouseout')
 																								draw = false;
 																							})
 
