@@ -2,9 +2,9 @@ var abalone_data;
 
 // all dimensions: 'length', 'height', 'shucked weight', 'diameter', 'whole weight', 'viscera weight', 'rings'
 var selected_atts = ['length', 'height', 'shucked weight', 'diameter', 'whole weight', 'viscera weight', 'rings'];
-var selected_atts = ['length', 'height', 'shucked weight','diameter', 'whole weight']//this is for debugging
+//var selected_atts = ['length', 'height', 'shucked weight','diameter']//this is for debugging
 var num_points = 800
-var num_points = 20 //debugging
+var num_points = 800 //debugging
 
 function plot_it()  {
 	// some data messing around-ness
@@ -41,7 +41,7 @@ function plot_it()  {
 
 		r = 3
 
-		opacity = 0.1
+		opacity = 0.2
 
 		x = d3.scaleLinear().range([r, plot_width-r])
 		y = d3.scaleLinear().range([plot_height-r,r])
@@ -88,7 +88,7 @@ function plot_it()  {
 	move_y = 0	
 	draw = false
 
-	s=	d3.selectAll('#scatter_plot').selectAll('g').data(combo).enter().append('g').attr('id','subplot').attr('transform',d=>'translate(' +scale_group_x(d['x_attr']) +','+scale_group_y(d['y_attr'])+')').each(function(d,i,g){
+	s=	d3.selectAll('#scatter_plot').selectAll('g').data(combo).enter().append('g').attr('class','subplot').attr('transform',d=>'translate(' +scale_group_x(d['x_attr']) +','+scale_group_y(d['y_attr'])+')').each(function(d,i,g){
 																			//console.log(d)	
 																			x_attr = d.x_attr
 																			y_attr = d.y_attr
@@ -149,111 +149,39 @@ function plot_it()  {
 																									x.domain(x_domain)
 																									y.domain(y_domain)
 																									if(draw == true){
-																										if(move_x >click_x){
+																													
+																													x_min = d3.min([click_x, move_x])
+																													x_max = d3.max([click_x, move_x])
+																													y_max = d3.max([click_y, move_y])
+																													y_min = d3.min([click_y, move_y])
+																													rect_width = x_max-x_min
+																console.log(x_min)
+																													rect_height = y_max-y_min
+																													d3.selectAll('#brush').attr('x',x_min).attr('y', y_min).attr('width', rect_width).attr('height',rect_height)
+																															
+																													update_array=[]
+																													parallel_array = []																									
+																													for(i=0;i<abalone_data.length;i++){
+																																data_x = abalone_data[i].value[x_attr]
+																																data_y = abalone_data[i].value[y_attr]
+																																scale_x = x(data_x)
+																																scale_y = y(data_y)
+																																
+																																if((scale_x>x_min) && (scale_x<x_max) && (scale_y<y_max) && (scale_y>y_min)){
 
-																												d3.selectAll('#brush')
-																																.attr('width', Math.abs(click_x-move_x))
-																												if(move_y>click_y){
-																													d3.selectAll('#brush')
-																																.attr('height', Math.abs(click_y-move_y))
-
-																												}
-																												else{
-																														
-																													d3.selectAll('#brush')
-																																.attr('y', move_y)
-																																.attr('height', Math.abs(click_y-move_y))
-																												}
-
-																										}
-																										else{
-																												d3.selectAll('#brush')
-																																.attr('x',move_x)
-																												
-																																.attr('width', Math.abs(click_x-move_x))
-																												if(move_y>click_y){
-																													d3.selectAll('#brush')
-																																.attr('height', Math.abs(click_y-move_y))
-
-																												}
-																												else{
-																														
-																													d3.selectAll('#brush')
-																																.attr('y', move_y)
-																																.attr('height', Math.abs(click_y-move_y))
-																												}
-	
-
-
-																										}
-																										
-																									
-																									for(i=0;i<abalone_data.length;i++){
-																												data_x = abalone_data[i].value[x_attr]
-																												data_y = abalone_data[i].value[y_attr]
-																												scale_x = x(data_x)
-																												scale_y = y(data_y)
-																												if(move_x>click_x){
-																													if(move_y>click_y){
-																														if((scale_x<move_x) &&(scale_x>click_x)&&(scale_y<move_y)&&(scale_y>click_y)){
-																															console.log(abalone_data[i])
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
-
-																														}
-																														else{
-
-																														
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
-																														}
+																																		update_array.push(abalone_data[i])
+																																		//console.log(JSON.stringify(assembly_data[i]))
+																																		parallel_array.push(assembly_data[i])
+																																}
 																													}
-																													else{
+																													
+																													
+																													//console.log(parallel_array)
+																													d3.selectAll('.subplot').selectAll('circle').data(update_array, d=>d.key).attr('fill', 'green').attr('opacity', 0.3)
+																													d3.selectAll('.subplot').selectAll('circle').data(update_array,d =>d.key).exit().attr('fill', 'red').attr('opacity', opacity)
+																													d3.select('#parallel_plot').selectAll('path').data(parallel_array, d=>d.key).attr('stroke', 'green')
 
-																														if((scale_x<move_x) &&(scale_x>click_x)&&(scale_y>move_y)&&(scale_y<click_y)){
-																															console.log(abalone_data[i])
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
-
-																														}
-																														else{
-
-																														
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
-																														}
-																													}
-
-																												}
-																												else{
-
-																													if(move_y>click_y){
-
-																														if((scale_x>move_x) &&(scale_x<click_x)&&(scale_y<move_y)&&(scale_y>click_y)){
-																															console.log(abalone_data[i])
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
-
-																														}
-																														else{
-
-																														
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
-																														}
-																													}
-																													else{
-
-																														if((scale_x>move_x) &&(scale_x<click_x)&&(scale_y>move_y)&&(scale_y<click_y)){
-																															console.log(abalone_data[i])
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','green').attr('opacity',0.3)
-
-																														}
-																														else{
-
-																														
-																															d3.selectAll('circle').data([abalone_data[i]], d=>d.key).attr('fill','red').attr('opacity',opacity)
-																														}
-																													}
-																												}
-
-																									}
-
-
+																													d3.select('#parallel_plot').selectAll('path').data(parallel_array, d=>d.key).exit().attr('stroke', 'blue')
 
 																									}	//if(draw==true)														
 					
@@ -310,7 +238,10 @@ function plot_it()  {
 			line_data.push(tuple)
 		//	console.log(line_data)
 		}
-		assembly_data.push(line_data)
+		outer_tuple = {}
+		outer_tuple['key'] = abalone_data[i].key
+		outer_tuple['value'] = line_data
+		assembly_data.push(outer_tuple)
 	}	
 
 
@@ -326,22 +257,28 @@ function plot_it()  {
 			d3.select('#parallel_plot').selectAll('text').data(selected_atts).enter().append('text')
 																												.text(d=>d)															
 																												.attr('transform', d=>'translate(' +(scale_group_x(d)-20)+','+(group_height-g_height+40)+')')
-												
-			d3.select('#parallel_plot').selectAll('path').data(assembly_data).enter().append('path')
+	// add min max
+			d3.selectAll('#parallel_plot').selectAll('none').data(selected_atts).enter().append('text')
+																												.text(d=>{console.log(domainByTrait[d]);return domainByTrait[d][0]})
+																												.attr('transform', d=>'translate(' +(scale_group_x(d)-20)+','+(group_height-g_height+40)+')')
+
+
+	//data join for parallel coordinates											
+			d3.select('#parallel_plot').selectAll('path').data(assembly_data, d=>{return d.key}).enter().append('path')
 
 
 																												.attr('d',d=>{
 																															//console.log('here')
 																														//	console.log(d);
 																														
-																															return line(d)})
+																															return line(d.value)})
 																													
 				.attr('fill', 'none')
 				.attr('stroke', 'blue')
 				.attr('stroke-width', '3')
 				.attr('opacity',opacity)
 
-
+		//add select rect to parallel
 	
 																		
 
