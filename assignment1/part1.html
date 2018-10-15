@@ -42,21 +42,24 @@
 		var bar_color_1 = '#ffecbf';
 		var bar_color_2 = '#e2ca9e';
 
+		d3.selectAll('#backgroundrect').attr('fill',bg_color);
 		// TODO: assign `rect` with id "backgroundrect" a fill of `bg_color`
-
+		d3.selectAll('.bar').attr('fill', (d,i)=>i%2?bar_color_2:bar_color_1);
 		// TODO: assign all `rect`s with class "bar" a fill of `bar_color_1` if the i'th bar is even, and `bar_color_2` if the i'th bar is odd
-
+		d3.selectAll('#mainbox').attr('fill', black_color);
 		// TODO: assign `rect` with id "mainbox" a fill of `black_color`
-
+		d3.selectAll('.maingroup').selectAll('.outer').attr('fill',black_color);
+		d3.selectAll('.maingroup').selectAll('.inner').attr('fill',bg_color);
 		// TODO: assign `circle` with class "outer", and whose parent is the group element with class "maingroup", a fill of `black_color`
 		// TODO: assign `circle` with class "inner", and whose parent is the group element with class "maingroup", a fill of `bg_color`
-
+		d3.selectAll('.leftgroup , .rightgroup').selectAll('.outer').attr('fill',bg_color);
+		d3.selectAll('.rightgroup, .leftgroup').selectAll('.inner').attr('fill',black_color);		
 		// NOTE: for each selection below, the transformation should be achieved with a single selection that specifies multiple class selectors
 		// TODO: assign `circle` with class "outer", and whose parent is the group element with class "leftgroup" or "rightgroup", a fill of `bg_color`
 		// TODO: assign `circle` with class "inner", and whose parent is the group element with class "leftgroup" or "rightgroup", a fill of `black_color`
 
 		// Q: Does the resulting visualization depend on the order in which we select elements and supply fill colors? Why or why not?
-		// A: 
+		// A: No. Because each element we selected has no hierachy structure.
 	}
 	</script>
 
