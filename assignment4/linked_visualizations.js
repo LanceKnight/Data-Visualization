@@ -257,11 +257,14 @@ function plot_it()  {
 			d3.select('#parallel_plot').selectAll('text').data(selected_atts).enter().append('text')
 																												.text(d=>d)															
 																												.attr('transform', d=>'translate(' +(scale_group_x(d)-20)+','+(group_height-g_height+40)+')')
-	// add min max
+	// add min 
 			d3.selectAll('#parallel_plot').selectAll('none').data(selected_atts).enter().append('text')
 																												.text(d=>{console.log(domainByTrait[d]);return domainByTrait[d][0]})
-																												.attr('transform', d=>'translate(' +(scale_group_x(d)-20)+','+(group_height-g_height+40)+')')
-
+																												.attr('transform', d=>'translate(' +(scale_group_x(d)-10)+','+(group_height-g_height+10)+')')
+	//add max
+			d3.selectAll('#parallel_plot').selectAll('none').data(selected_atts).enter().append('text')
+																												.text(d=>{console.log(domainByTrait[d]);return domainByTrait[d][1]})
+																												.attr('transform', d=>'translate(' +(scale_group_x(d)-10)+','+(0)+')')
 
 	//data join for parallel coordinates											
 			d3.select('#parallel_plot').selectAll('path').data(assembly_data, d=>{return d.key}).enter().append('path')
