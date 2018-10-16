@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 3 - Question 2</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+	</body>
+	<script type='text/javascript'>
+	{
+		d3.csv('birds.csv')
+		  .then(function(data)  {
+			  bird_data = data;
+			  bird_data.forEach(function(d)  {
+				  d.bird_size=+d.bird_size;
+				  d.wing_length=+d.wing_length+0.01;
+			  });
+			  plot_it();
+		  })
+
+		function plot_it()  {
+			var width = 700, height = 700;
+			var pad = 80;
+			var actual_width = width-2*pad, actual_height = height-2*pad;
+			d3.select('body').append('svg').attr('width', width).attr('height', height)
+			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('class', 'basegroup')
+			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
+				.text('Question 2: How does bird size vary across different head patterns?')
+	
+			head_array =[]	
+			reformat_data=[];
+			size_array = []
+			for(var i =0; i< bird_data.length; i++){
+				head = bird_data[i].head_pattern
+				value = bird_data[i].bird_size;
+				size_array.push(bird_data[i].bird_size);
+//				console.log('head:'+head)
+				if( check_exist(head, reformat_data)== false ){
+//					console.log('new head:'+head);
+					size_array = [];
+					size_array.push(bird_data[i].bird_size)
+					tuple = {name:head, size:size_array}
+					reformat_data.push(tuple)
+					head_array.push(head);
+				}
+				else{
+						console.log('about to update')
+						update_value(head, value, reformat_data)
+
+				}
+			}
+			console.log(reformat_data)				
+			num_group = head_array.length
+			group_scale_array = []
+			group_scale_x = d3.scaleBand().domain(head_array).range([0, actual_width])
+			group_scale_x.paddingInner(0.05)
+			group_band_width =group_scale_x.bandwidth()
+			
+			max_y = d3.max(size_array)
+			min_y = d3.min(size_array)
+
+			scale_y = d3.scaleLinear().domain([min_y,max_y]).range([actual_height, 0]);
+			scale_color = d3.scaleLinear().domain([0, actual_width]).interpolate(d3.interpolateHcl)
+															.range([d3.rgb("#007AFF"),d3.rgb('#FFF500')]);
+
+
+			s=d3.selectAll('g').selectAll('k').data(reformat_data, d=>d.name).enter().append('rect')
+																								.attr('x', d=>group_scale_x(d.name))
+																								.attr('y', d=>{console.log(d3.sum(d.size)/d.size.length)
+																													console.log(scale_y(d3.sum(d.size)/d.size.length))
+																									return 		scale_y(d3.sum(d.size)/d.size.length)}) 
+																								.attr('width', group_band_width)
+																								.attr('height', d=>actual_height-scale_y(d3.sum(d.size)/d.size.length))
+																								.attr('fill', d=>{
+																												console.log(scale_color(group_scale_x(d.name)))
+																												return scale_color(group_scale_x(d.name))})
+			d3.select('svg').selectAll('k').data(reformat_data).enter().append('text')
+																							.text(d=>d.name)
+																						//	.attr('x',d =>pad +group_scale_x(d.name))
+																						//	.attr('y',d =>actual_height+pad+20)
+			
+																				.attr('transform', d=>'translate('+(pad+group_scale_x(d.name))+','+(pad+actual_height+20)+ ') rotate(45)')
+
+			//add x label
+			d3.select('.basegroup').append('text').text('Head Pattern').attr('transform','translate('+actual_width/2+','+(actual_height+pad)+')')
+			d3.select('svg').append('g')
+										.attr('transform', 'translate(80,80)')
+										.call(d3.axisLeft(scale_y))
+
+			d3.select('svg').append('text')
+										.text('Mean Bird Size in Each Head Pattern Group')
+										.attr('transform', d=>'translate('+(pad-40)+','+(pad+actual_height/2+120)+ ') rotate(-90)')
+
+																								/*.append('g')
+																								s.attr('class', 'group')
+
+																								.attr('transform', (d,i) => 'translate('+group_scale_x(d.name)+','+ actual_height +')')	
+																								.attr('id', (d,i)=>{
+																//								console.log(d)
+																								return	'group '+ i})	
+
+																								.append('rect')
+																								.attr('width', group_band_width)
+																								.attr('height', d=>scale_y(d3.sum(d.size)/d.size.length))
+																								.attr('x', 30)
+																								.attr('fill', 'lightblue')
+			s.selectAll('g').data(d=>{console.log(d); return d}).enter().append('rect')
+											.attr('class', 'data')
+										/*	.attr('height', d=>{ 
+												console.log('here')
+												console.log(d3.sum(d.size)/d.size.length)
+											return d3.sum(d.size)/d.size.length})
+											.attr('width', group_band_width)
+										*/	
+
+
+		}
+		function check_exist(string, array){
+			for(var i=0; i<array.length; i++){
+				name = array[i].name
+//				console.log('name:'+name)
+				if(string == name)
+					return true;
+			}
+			return false
+		}
+		function update_value(name, value, array){
+			for(var i = 0; i< array.length;i++){
+				if(name == array[i].name){
+					array[i].size.push(value)
+				}
+			}
+			
+		}
+	}
+/*
+
+Q: Why did you choose the particular mark(s)?
+A: I chose rect as my mark becuase it is easy to compare to see how size varies. 
+
+Q: Why did you choose the particular channels?
+A: I chose height of bar as my channel because size is a quantative data. I chose color and x position to be my channel for head pattern because it is a categorical unordered data 
+
+Q: Why is your design good in helping to answer the question?
+A: The rect are in the same baseline so the height represents the mean value, it is easy to compare the value by comparing the height.
+
+Q: What are the limitations of your design in attempting to answer the question?
+A: When the difference between mean value is small, it may be uneasy to differciate the difference
+
+*/
+	</script>
+</html>

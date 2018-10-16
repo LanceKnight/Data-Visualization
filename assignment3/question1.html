@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 3 - Question 1</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+	</body>
+	<script type='text/javascript'>
+	{
+		d3.csv('birds.csv')
+		  .then(function(data)  {
+			  bird_data = data;
+			  bird_data.forEach(function(d)  {
+				  d.bird_size= +d.bird_size;
+				  d.wing_length= +d.wing_length+0.01;
+			  });
+			  plot_it();
+		  })
+
+		function plot_it()  {
+			var width = 700, height = 700;
+			var pad = 80;
+			var actual_width = width-2*pad, actual_height = height-2*pad;
+			d3.select('body').append('svg').attr('width', width).attr('height', height)
+			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('id','main')
+			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
+				.text('Question 1: What is the relationship between bird size and wing length?')
+
+			var s = d3.selectAll('g').selectAll('x').data(bird_data)
+			var r = 2;			
+			var size_array = [];
+			var wing_array = [];
+			for(var i = 0; i<bird_data.length;i++){
+				size_array.push(bird_data[i].bird_size);
+				wing_array.push(bird_data[i].wing_length)
+			}		
+
+			min_x = d3.min(size_array), min_y = d3.min(wing_array);
+			max_x = d3.max(size_array), max_y = d3.max(wing_array);
+
+			x_scale = d3.scaleLinear().domain([min_x,max_x]).range([r,actual_width-r]);
+
+			y_scale = d3.scaleLinear().domain([min_y,max_y]).range([actual_height-r, r]);
+
+
+			s.enter().append('circle')
+							.attr('cx', d=>x_scale(d.bird_size))
+							.attr('cy', d=>y_scale(d.wing_length))
+							.attr('r', r)
+							.attr('fill', 'red')
+			
+			d3.selectAll('#main').append('g')
+					.attr('id', 'bottomaxis')
+					.attr('transform', 'translate('+'0'+','+(actual_height+0)+')')
+					.call(d3.axisBottom(x_scale));
+
+			d3.selectAll('#main').append('g')
+					.attr('id', 'leftaxis')
+					.attr('transform', 'translate('+0+','+0+')')
+					.call(d3.axisLeft(y_scale));
+
+			d3.selectAll('#main').append('text')
+					.text('Bird Size')
+					.attr('transform','translate('+actual_width/2+","+(actual_height+pad)+')')
+				//	.attr('x', actual_width/2)
+				//	.attr('y', actual_height+pad)
+
+
+			d3.selectAll('#main').append('text')
+					.text('Wing Length')
+					.attr('transform','translate('+(-pad/2)+","+(height/2)+')rotate(-90)')
+				//	.attr('x', pad)
+				//	.attr('y', actual_height/2)
+
+		}
+	}
+
+/*
+
+Q: Why did you choose the particular mark(s)?
+A: I choose circle as my mark because it is an easy one for a simple task like this one. And it can use size and color for more channel options if needed.  
+
+Q: Why did you choose the particular channels?
+A: I choose position as my channels since the relationship between wing length and bird size can be easily seen by examine the circle position. Linear scaling was used since I find the relationship seems to be linear. I might use log scaling or others if I find the relationship is not linear.
+
+Q: Why is your design good in helping to answer the question?
+A: Because both data are quantitive, using a scatter plot is good when the relationship is unknown so one can see the circle patterns and hence be able to answer the relationship question. 
+
+Q: What are the limitations of your design in attempting to answer the question?
+A: If the relationship is not linear, I will have to change the scaling and the choice is very designer-dependent.
+
+*/
+	</script>
+</html>

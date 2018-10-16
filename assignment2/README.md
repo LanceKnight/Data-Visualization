@@ -57,14 +57,22 @@ We will then want to visualize this hierarchy.
 
 You will use line charts to visualize the time series data. In particular, you will visualize particular types of **node subsets** of the hierarchy, where each node in the hierarchy contains a time series. More specifically, a valid subset is one that:
 
+<<<<<<< HEAD
 * **Covers all children**: all leaves in the tree can be reached by a path that originates in one of the nodes in the subset (a leaf node in the subset is considered to be already "reached").
+=======
+* **Covers all leaves**: all leaves in the tree can be reached by a path that originates in one of the nodes in the subset (a leaf node in the subset is considered to be already "reached").
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 * **Excludes ancestors**: two nodes in which one is an ancestor of another cannot belong in the subset.
 
 For any subset that satisfies these conditions, you will plot all of their corresponding time series in one graph. To realize this, you will need:
 
 * `d3.scales` for the x and y axes, as well as `d3.line` to plot each time series.
 * `d3.axis` to show the axes
+<<<<<<< HEAD
 * labels to show the axes - in particular, for each time series, you will place a text label on the right side of the graph, whose y-coordinate is assigned that of the time series' (mapped via scale) value at the last date, so that the text label is adjacent to the time series.
+=======
+* labels to identify each time series - in particular, for each time series, you will place a text label on the right side of the graph, whose y-coordinate is assigned that of the time series' (mapped via scale) value at the last date, so that the text label is adjacent to the time series.
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 
 Moreover, we will want to process any subset of nodes, which means that we must be able to match nodes when we perform data joins. Thus, **keys** should be used when performing data joins, and you may use the `name` property of each node for this purpose.
 
@@ -77,6 +85,21 @@ The time series are organized in this manner to enable interactivity. To this en
 * **Expand**: when a user performs a `click` on a time series, it should be replaced by its **direct children**. That is, the current time series is removed, and its children time series are added.
 * **Collapse**: when a user performs a `Shift+click` on a time series, it should be replaced by its **parent**. Specifically, the parent time series is added and any node that is a descendant of this parent is removed.
 
+<<<<<<< HEAD
+=======
+| Before Click | After Click |
+| ------------ | ----------- |
+| <img width="300" alt="timeseries-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-1.png"> | <img width="300" alt="timeseries-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-2.png"> |
+
+The above shows an example of what your visualization should look like. Given the set of time series on the left, upon clicking on the orange curve, we should see this node's children time series, shown on the right.
+
+| Before Shift+Click | After Shift+Click |
+| ------------------ | ----------------- |
+| <img width="300" alt="timeseries-3" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-3.png"> | <img width="300" alt="timeseries-4" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/timeseries-4.png"> |
+
+Similarly, given the time series on the left, should the user press `Shift+click` on any curve with a purple hue, all time series with a purple hue should collapse into their parent, shown on the right.
+
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 You will need to do two main operations here:
 
 * For a given time series that the user clicked on, you must determine what nodes in the tree to visualize, depending on whether they expand or collapse.
@@ -97,6 +120,15 @@ There are several important choices to make regarding streamgraphs. Arguably mos
 
 All other considerations regarding streamgraphs: time series ordering, layer labeling, color, you need not worry about. Simply color the areas by the colors you used in the previous part of the assignment. Furthermore, you do not need to address transitions - updates will be instantaneous. But the user should still be able to click on an area to expand, and Shift+click on on area to collapse. Last, text labels need not be animated either, but should be positioned in the center of each time series' area (in the y-axis).
 
+<<<<<<< HEAD
+=======
+| Before Click | After Click |
+| ------------ | ----------- |
+| <img width="300" alt="streamgraph-1" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/streamgraph-1.png"> | <img width="300" alt="streamgraph-2" src="https://github.com/matthewberger/vis-fall2018-assignments/blob/master/assignment2/streamgraph-2.png"> |
+
+The above shows an example of what your streamgraph visualization should look like. Each time series is represented as an area. By clicking on an area, e.g. the purple area shown on the left, it will expand that node's children time series, shown on the right. Analogously, when the user Shift+clicks on a non-root node, the set of time series should collapse.
+
+>>>>>>> ea3d92349662c948fa0e4456cc9b519d42736fcf
 Try out the two different aggregations: mean and sum. You should now see that it is much easier to perceive summations of time series compared to the above technique of visualizing individual time series, since in the latter we are not rescaling the axes.
 
 ## Hand-in

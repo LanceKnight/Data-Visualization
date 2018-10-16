@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 3 - Question 4</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+	</body>
+	<script type='text/javascript'>
+	{
+		d3.csv('birds.csv')
+		  .then(function(data)  {
+			  bird_data = data;
+			  bird_data.forEach(function(d)  {
+				  d.bird_size=+d.bird_size;
+				  d.wing_length=+d.wing_length+0.01;
+			  });
+			  plot_it();
+		  })
+
+		function plot_it()  {
+			var width = 1400, height = 3000;
+			var pad = 80;
+			var actual_width = width-2*pad, actual_height = height-2*pad;
+			r = 2
+			innerpad = 0.2
+			d3.select('body').append('svg').attr('width', width).attr('height', height)
+			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('class', 'basegroup')
+			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
+				.text('Question 4: What is the relationship between bird size and wing length, relative to head pattern and wing pattern?')
+		
+		   wing_array =[]
+	   	size_array =[]
+			head_array =[]
+			pattern_array = []
+			head=d3.nest().key(d=>d.head_pattern).entries(bird_data)
+			pattern=d3.nest().key(d=>d.wing_pattern).entries(bird_data)
+			data = d3.nest().key(d=>d.head_pattern).key(d=>d.wing_pattern).entries(bird_data)
+			for(var i = 0; i<head.length; i++){
+				head_array.push(head[i].key)	
+			}
+			
+			for(var i = 0; i<pattern.length; i++){
+				pattern_array.push(pattern[i].key)	
+			}
+			
+		
+			group_scale_x = d3.scaleBand().domain(pattern_array).range([0,actual_width])
+			group_scale_x.paddingInner(innerpad)
+			x_band = group_scale_x.bandwidth()
+			group_scale_y = d3.scaleBand().domain(head_array).range([actual_height, 0])
+			group_scale_y.paddingInner(innerpad)
+			y_band = group_scale_y.bandwidth()
+			console.log(group_scale_y('plain'))
+
+			console.log(group_scale_y.bandwidth())
+
+			for(var i = 0; i<bird_data.length;i++){
+				wing_array.push(bird_data[i].wing_length)
+				size_array.push(bird_data[i].bird_size)
+			}
+
+			min_x = d3.min(wing_array), max_x = d3.max(wing_array)
+			min_y = d3.min(size_array), max_y = d3.max(size_array)
+		
+			scale_x = d3.scaleLinear().domain([min_x,max_x]).range([r,x_band-r]) 
+			scale_y = d3.scaleLinear().domain([min_y,max_y]).range([y_band-r,r])
+			
+			s=d3.selectAll('g').selectAll('x').data(data).enter().append('g')
+																						.attr('transform',d=>{console.log(d);
+																												return'translate('+0+','+group_scale_y(d.key)+')'})
+																						.attr('class', 'subploty')
+	//		s.selectAll('x').data(d=>{console.log(d.key);return d.key}).enter().append('g').attr('id', 'yaxis').attr('transform', 'translate('+0+','+y_band+')').call(d3.axisLeft(group_scale_y))
+			
+			s1=s.selectAll('x').data(d=>{//console.log(d.values)
+												return d.values}).enter().append('g')
+																						.attr('transform',d=>{//console.log(group_scale_x(d.key));
+																													return'translate('+group_scale_x(d.key)+','+0+')'})
+																						.attr('class', 'subplotx')
+			//--------add x axis																			
+			s1.selectAll('x').data(d=>{
+									//	console.log(d.values);
+										return d.values}).enter().append('g').attr('transform', 'translate('+0+','+y_band+')').call(d3.axisBottom(scale_x))
+
+			s1.selectAll('x').data(d=>{
+								//	console.log(d.values);
+									return d.values}).enter().append('g').attr('transform', 'translate('+0+','+0+')').call(d3.axisLeft(scale_y))
+	
+
+			d3.selectAll('.subplotx').append('rect').attr('width', x_band).attr('height',y_band).attr('fill','lightblue').attr('opacity',0.4)
+
+			s2=s1.selectAll('x').data(d=>d.values).enter().append('circle')
+																					.attr('cx', d=>{return scale_x(d.wing_length)})
+																					.attr('cy', d=>scale_y(d.bird_size))
+																					.attr('r',r)
+	//y group label
+			d3.select('.basegroup').selectAll('x').data(data).enter().append('text').text(d=>{console.log(d.key);return d.key}).attr('transform', d=>'translate('+(-60)+','+(group_scale_y(d.key)+y_band/1.7)+') rotate(-90)').attr('font-size','30px')
+		
+			data2 = d3.nest().key(d=>d.wing_pattern).entries(bird_data)
+			d3.select('svg').selectAll('x').data(data2).enter().append('text').text(d=>d.key).attr('transform', d=>'translate('+(150+group_scale_x(d.key))+','+'50)').attr('font-size','30px')
+	//		s.selectAll('x').data(d=>{console.log(d);return d.values}).enter().append('text').text(d=>d.key).attr('transform', d=>'translate('+group_scale_x(d.key)+','+0+') rotate(0)')
+		//x label	
+			s.selectAll('x').data(d=>d.values).enter().append('text').text('Wing Length').attr('transform', d=>'translate('+(group_scale_x(d.key)+x_band/2-30)+','+(y_band+30)+') rotate(0)').attr('id', 'x label')
+		//ylabel
+			s.selectAll('x').data(d=>d.values).enter().append('text').text('Bird Size').attr('transform', d=>'translate('+(group_scale_x(d.key)-30)+','+(y_band/2+30)+') rotate(-90)').attr('id', 'y label')
+			s.selectAll('test')
+
+			d3.selectAll('circle').attr('fill', 'red')
+
+	//		d3.selectAll('svg').append('circle').attr('cx',100).attr('cy',100).attr('r',10)
+
+	//		d3.selectAll('.subploty').append('rect').attr('width', x_band).attr('height',y_band).attr('fill','lightblue')
+			
+			
+
+	/*	
+		
+		accent = d3.scaleOrdinal(d3.schemeAccent)
+		 
+
+		d3.selectAll('g').selectAll('circle').data(bird_data).enter().append('circle')
+																				.attr('cx', d=>scale_x(d.wing_length))
+																				.attr('cy', d=>scale_y(d.bird_size))
+																				.attr('r',10)
+
+*/
+
+
+
+
+
+		}
+	}
+
+/*
+
+Q: Why did you choose the particular mark(s)?
+A: I chose dot as my mark because it is easy to show the relationship if there is any between two quantitative values. 
+
+Q: Why did you choose the particular channels?
+A: I chose x, y as my channel. I used them in two ways. One for group x, y, each represents a categorical data. Then for each subplot, the x, y represents quantatative data.
+
+Q: Why is your design good in helping to answer the question?
+A: One can easily query a certain combination of two categorical data and then look at the subplot to find the relationship he wants.
+
+Q: What are the limitations of your design in attempting to answer the question?
+A:The scales are the same for all subplot. It is easy to compare between subpolts but some subplots have most dots clustered together.
+
+*/
+	</script>
+</html>

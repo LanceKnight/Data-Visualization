@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'>
+		<title>Assignment 3 - Question 3</title>
+		<script type='text/javascript' src='../d3.js'></script>
+	</head>
+	<body>
+	</body>
+	<script type='text/javascript'>
+	{
+		d3.csv('birds.csv')
+		  .then(function(data)  {
+			  bird_data = data;
+			  bird_data.forEach(function(d)  {
+				  d.bird_size=+d.bird_size;
+				  d.wing_length=+d.wing_length+0.01;
+			  });
+			  plot_it();
+		  })
+
+		function plot_it()  {
+			var width = 3000, height = 700;
+			var pad = 80;
+			var actual_width = width-2*pad, actual_height = height-2*pad;
+			var group_innerpad = 0.2
+			var innerpad =0.03
+			d3.select('body').append('svg').attr('width', width).attr('height', height)
+			d3.select('svg').append('g').attr('transform', 'translate('+pad+','+pad+')').attr('class', 'basegroup')
+			d3.select('svg').append('text').attr('x', width/2).attr('y', 15).attr('text-anchor', 'middle').attr('font-size', '12px')
+				.text('Question 3: How does wing length compare across different head patterns and wing patterns?')
+			
+
+		data=d3.nest().key(d=>d.head_pattern).key(d=>d.wing_pattern).entries(bird_data)
+		
+		wing_array =[]
+	   size_array =[]
+		head_array =[]
+      pattern_array = []
+	   head=d3.nest().key(d=>d.head_pattern).entries(bird_data)
+ 		pattern=d3.nest().key(d=>d.wing_pattern).entries(bird_data)
+		for(var i = 0; i<head.length; i++){
+			 head_array.push(head[i].key)  
+		}
+		 
+		for(var i = 0; i<pattern.length; i++){
+			pattern_array.push(pattern[i].key)  
+		}
+		for(var i = 0; i< bird_data.length; i++){
+			wing_array.push(bird_data[i].wing_length)
+			size_array.push(bird_data[i].bird_size)
+		}
+
+
+		group_scale_x = d3.scaleBand().domain(head_array).range([0, actual_width])
+		group_scale_x.paddingInner(group_innerpad)
+		group_x_band = group_scale_x.bandwidth()
+
+		scale_x = d3.scaleBand().domain(pattern_array).range([0,group_x_band])
+		scale_x.paddingInner(innerpad)
+		x_band = scale_x.bandwidth()
+
+		min_y = d3.min(wing_array)
+		max_y = d3.max(wing_array)
+		scale_y = d3.scaleLinear().domain([min_y, max_y]).range([group_x_band,0])
+		
+		color_scale = d3.scaleOrdinal(d3.schemeCategory10)
+
+		s1 = d3.select('.basegroup').selectAll('x').data(data).enter().append('g').attr('transform',d=>'translate('+group_scale_x(d.key)+',0)').attr('class','group')
+ 		s2 = s1.selectAll('x').data(d=>d.values).enter().append('g').attr('transform', d => 'translate('+scale_x(d.key)+',0)').attr('class','barrect_group')
+
+		//group background rect
+		d3.selectAll('.group').append('rect').attr('width', group_x_band). attr('height', group_x_band).attr('fill', 'lightblue').attr('opacity', 0.3)
+		//actual bar rect
+			
+		s2.selectAll('x').data(d=>d.values).enter().append('line')
+														//		.attr('width', x_band)
+														//		.attr('height', d=>{console.log(d.wing_length);return scale_y(d.wing_length)})
+																.attr('x1', 0)
+																.attr('y1', d=>scale_y(d.wing_length))
+																.attr('x2', x_band)
+																.attr('y2', d=>{console.log(d.wing_pattern + ':'+d.wing_length); return scale_y(d.wing_length)})
+														//		.attr('transform',d=>{console.log(d.wing_length);return 'translate(0,'+(scale_y(d.wing_length))+')'})
+																.attr('style',d=>{
+																			a = color_scale(pattern_array.indexOf(d.wing_pattern))
+																			console.log(a);return 'stroke:'+a+'; stroke-width:1'})
+																
+
+			
+	
+		//y axis
+		s1.append('g')
+								.call(d3.axisLeft(scale_y))
+		//group label
+		d3.select('.basegroup').selectAll('x').data(data).enter().append('text').text(d=>'Head Patten: '+d.key).attr('transform',d=>'translate('+group_scale_x(d.key)+',0)')
+
+		d3.select('.basegroup').selectAll('x').data(data).enter().append('text').text('Wing Length').attr('transform',d=>'translate('+(group_scale_x(d.key)-30)+','+(group_x_band/2+20)+') rotate(-90)')
+
+		//bar label
+		s1.selectAll('x').data(d=>d.values).enter().append('text').text(d=>{console.log(d.key);return d.key}).attr('transform',d=>'translate('+scale_x(d.key)+','+(20+group_x_band)+') rotate(30)')
+
+		}
+	}
+
+/*
+
+Q: Why did you choose the particular mark(s)?
+A: I chose line as my mark because it is easy to show each individual record 
+
+Q: Why did you choose the particular channels?
+A: I chose x, y as my channel because they are easy to represent quantitative data
+
+Q: Why is your design good in helping to answer the question?
+A: I have two groupping. The outer grouping is for head pattern and inner grouping is for wing pattern. So one can easily compare between groups.
+
+Q: What are the limitations of your design in attempting to answer the question?
+A: However, when a user try to compare an inner group between outer group, because the distance, it may be hard.
+
+*/
+	</script>
+</html>
