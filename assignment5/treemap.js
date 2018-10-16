@@ -1,4 +1,4 @@
-var global_cushion_scale = 0.0; 
+var global_cushion_scale = 0.07; 
 count = 0
 // compute depths, concatenate package names, leaf determination, accumulate sizes...
 function preprocess_tree(node, concat_names, depth)  {
@@ -29,7 +29,7 @@ function plot_it()  {
 	// setup svg element
 	var width = 750, height = 750;
 	var pad = 80;
-	var rect_pad = 10
+	
 	actual_width = width -2*pad, actual_height = actual_width;
 
 	d3.select('body').append('svg').attr('width',width).attr('height',height);
@@ -55,17 +55,23 @@ function plot_it()  {
 							}
 	
 	
-	draw_tree([flare_data],0,0, actual_width, actual_height)
+	draw_tree([test_data],0,0, actual_width, actual_height)
 }
 
 
 
 function draw_tree(node_array, x, y, w, h){
-	
+	var rect_pad = d3.min([w,h])*	global_cushion_scale
+//	console.log('w:',w)
+//	console.log('rect_pad:',rect_pad)
 	var num = node_array.length	
-	var step = w/num
-	var sub_x = x
-	var sub_y = y
+
+	var sub_width = (w-(num+1)*rect_pad)/num
+	var sub_height = (h-2*rect_pad)
+//	console.log('sub_width:',sub_width)
+	var sub_x = x+rect_pad
+	var sub_y = y+rect_pad
+
 	d3.selectAll('#plot').selectAll('x').data(node_array).enter()//.append('g').attr('id',d=>d.name)
 																																.append('rect')
 																																.attr('id', d=>d.name+'_'+count)
@@ -79,15 +85,15 @@ function draw_tree(node_array, x, y, w, h){
 														console.log('name:',d.name)
 														d3.select(this).attr('x',sub_x)
 																						.attr('y',sub_y)
-																						.attr('width',step)
-																						.attr('height',h)	
+																						.attr('width',sub_width)
+																						.attr('height',sub_height)	
 														
 														
 														if(d.children.length>0){								
-															draw_tree(d.children, sub_x, sub_y, step, h)
+															draw_tree(d.children, sub_x, sub_y, sub_width, sub_height)
 														}
 													
-														sub_x = sub_x + step
+														sub_x = sub_x + sub_width + rect_pad
 
 																																})
 
