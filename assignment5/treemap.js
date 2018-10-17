@@ -37,27 +37,101 @@ function plot_it()  {
 
 	//d3.select('#plot').append('rect').attr('x',3).attr('y',4).attr('width',30).attr('height',40)
 	// do treemap!
-	test_data = {name:'test1',children:[
-																		{name:'test11',children:[
-																														{name:'test111',children:[]},
-																														{name:'test112',children:[]},
-																														{name:'test113',children:[]}
+	test_data = {name:'test1',depth:1,children:[
+																		{name:'test11',depth:2,children:[
+																														{name:'test111',depth:3,children:[]},
+																														{name:'test112',depth:3,children:[]},
+																														{name:'test113',depth:3,children:[]}
 																														]
 																		},
-																		{name:'test12',children:[
+																		{name:'test12',depth:2,children:[
 
-																														{name:'test121',children:[]},
-																														{name:'test122',children:[]}
+																														{name:'test121',depth:3,children:[]},
+																														{name:'test122',depth:3,children:[]}
 																		
 																														]
 																		}
 																		]
 							}
 	
-	
-	draw_tree([test_data],0,0, actual_width, actual_height)
+
+	d3.selectAll('#plot').selectAll('x').data([test_data]).enter().append('rect')
+																																	
+																																.attr('opacity',0.3)
+																																.attr('fill','white')
+																																.attr('stroke', 'black')
+																																.attr('x',0)
+																																.attr('y',0)
+																																.attr('width', actual_width)
+																																.attr('height', actual_height)
+																																
+
+
+	draw_tree(test_data.children,0,0, actual_width, actual_height)
+
+	d3.select('svg').on('wheel', function(){
+																					direction = d3.event.wheelDelta
+																					console.log('zoomed:',direction)
+
+																					if(direction>0){
+																							if(global_cushion_scale<1)
+																								global_cushion_scale+=0.1
+																							update_tree(test_data.children, 0,0, actual_width, actual_height)	
+																							
+
+																					}
+
+																					
+
+
+
+	})
+
 }
 
+
+function update_tree(node_array, x, y, w, h){
+
+	var rect_pad = d3.min([w,h])*	global_cushion_scale
+//	console.log('w:',w)
+//	console.log('rect_pad:',rect_pad)
+	var num = node_array.length	
+
+	var sub_width = (w-(num+1)*rect_pad)/num
+	var sub_height = (h-2*rect_pad)
+//	console.log('sub_width:',sub_width)
+	var sub_x = x+rect_pad
+	var sub_y = y+rect_pad
+	var depth = node_array[0].depth
+	console.log('scale:', global_cushion_scale)
+	d3.selectAll('#plot').selectAll('.depth_'+depth).data(node_array)//.append('g').attr('id',d=>d.name)
+
+																															
+																																.attr('id', d=>d.name+'_'+count)
+																												//				.attr('y', d=>{x+step;return y})
+																												//				.attr('width',step)
+																												//				.attr('height',h)
+																																.attr('opacity',0.3)
+																																.attr('fill','white')
+																																.attr('stroke', 'black')
+																																.each(function (d){
+														console.log('name:',d.name)
+														d3.select(this).attr('x',sub_x)
+																						.attr('y',sub_y)
+																						.attr('width',sub_width)
+																						.attr('height',sub_height)	
+														
+														
+														if(d.children.length>0){								
+															draw_tree(d.children, sub_x, sub_y, sub_width, sub_height)
+														}
+													
+														sub_x = sub_x + sub_width + rect_pad
+
+																																})
+
+
+}
 
 
 function draw_tree(node_array, x, y, w, h){
@@ -75,7 +149,7 @@ function draw_tree(node_array, x, y, w, h){
 	d3.selectAll('#plot').selectAll('x').data(node_array).enter()//.append('g').attr('id',d=>d.name)
 																																.append('rect')
 																																.attr('id', d=>d.name+'_'+count)
-																												//				.attr('y', d=>{x+step;return y})
+																																.attr('class', d=>'depth_'+d.depth)
 																												//				.attr('width',step)
 																												//				.attr('height',h)
 																																.attr('opacity',0.3)
