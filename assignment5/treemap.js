@@ -1,5 +1,6 @@
 var global_cushion_scale = 0.00; 
-count = 0
+text_opacity = 0.2
+font_factor = 80
 error = false
 scale_step = 0.01
 // compute depths, concatenate package names, leaf determination, accumulate sizes...
@@ -41,7 +42,7 @@ function plot_it()  {
 									   ]
 	}
 	data = flare_data
-	data = test_data	
+	//data = test_data	
 	// preprocess the tree
 	preprocess_tree(data, '', 0);
 
@@ -69,15 +70,21 @@ function plot_it()  {
 															.attr('width', d=>d.w)
 															.attr('height', d=>d.h)
 															.attr('id',d=>d.name)																	
-
-
+	d3.selectAll('#plot').selectAll('x').data([data], d=>d.name).enter().append('text')
+															.attr('opacity', 0)	
+															.text(d=>d.name)
+															.attr('x', d=>d.x+d.w/2)
+															.attr('y', d=>d.y+d.h/2)
+															.attr('style', d=>'font-size:'+1/d.depth * font_factor+"px;stroke-width:8")
+															.attr('alignment-baseline','centeral')
+															.attr('text-anchor', 'middle')
 	draw_tree(data.children,0,0, actual_width, actual_height)
 
 	d3.select('svg').on('wheel', function(){
 										direction = d3.event.wheelDelta
 										console.log('zoomed:',direction)
 
-										if(direction<0){
+										if(direction>0){
 												if(global_cushion_scale<0.5-scale_step)
 													global_cushion_scale+=scale_step
 											
@@ -103,27 +110,29 @@ function plot_it()  {
 
 	})
 //	d3.select('svg').append('rect').attr('fill','white').attr('text-anchor', 'middle').text('test').attr('x',0).attr('y',0).attr('width',100).attr('height',100).attr('stroke','black')
-	d3.selectAll('rect').on('mouseover', function(){
-												d3.select('#plot').append('text')
-																.text('test')
-																.attr('text-anchor','middle')
-																.attr('style','font-size:12px')
-																.attr('x', d3.sum([this.getAttribute('x'),this.getAttribute('width')/2]))
-																.attr('y', d3.sum([this.getAttribute('y'),this.getAttribute('height')/2]))
-																.text(this.getAttribute('id'))
-
+	d3.selectAll('rect').on('mouseover', function(d){
+				console.log(d)
+				array = []
+				get_parent(d, array)
+				console.log(array)
+				d3.selectAll('text').data(array, d=>d.name)
+									.attr('opacity', d=>d.depth*text_opacity)
+									.exit()
+									.attr('opacity',0)
 
 
 	}).on('mouseout',function(){
-						d3.selectAll('text').remove()
-
+		d3.selectAll('text').attr('opacity',0)
 	})
 
 
 }
 
-function label(element){
-
+function get_parent(node, array){
+	array.push(node)
+	if(node.parent != undefined){
+		get_parent(node.parent, array)
+	}
 
 }
 
@@ -166,7 +175,14 @@ function draw_tree(node_array){
 														}
 													})
 
-	
+	d3.select('#plot').selectAll('x').data(node_array, d=>d.name).enter().append('text')
+													.attr('opacity', 0)
+													.text(d=>d.name)
+													.attr('x', d=>d.x+d.w/2)
+													.attr('y', d=>d.y+d.h/2)
+													.attr('style', d=>'font-size:'+1/d.depth * font_factor+"px")
+													.attr('text-anchor','middle')
+													.attr('alignment-baseline','centeral')
 
 }
 
@@ -187,6 +203,12 @@ function update_tree(node_array){
 															update_tree(d.children);
 														}
 													})
+
+
+	d3.select('#plot').selectAll('text').data(node_array, d => d.name)			
+
+													.attr('x', d=>d.x+d.w/2)
+													.attr('y', d=>d.y+d.h/2)
 
 }
 function construct_tree(node, x, y, w, h){
