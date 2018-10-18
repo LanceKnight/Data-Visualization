@@ -1,4 +1,4 @@
-var global_cushion_scale = 0.07; 
+var global_cushion_scale = 0.03; 
 count = 0
 // compute depths, concatenate package names, leaf determination, accumulate sizes...
 function preprocess_tree(node, concat_names, depth)  {
@@ -39,7 +39,7 @@ function plot_it()  {
 									   ]
 	}
 	data = flare_data
-	data = test_data	
+//	data = test_data	
 	// preprocess the tree
 	preprocess_tree(data, '', 0);
 
@@ -133,14 +133,14 @@ function construct_tree(node, x, y, w, h){
 
 	
 	if(node.children.length >0){
-		num = node.children.length
+		var num = node.children.length
 		var rect_pad = d3.min([w,h]) * global_cushion_scale
 		var sub_x = x+rect_pad
 		var sub_y = y+rect_pad
 		for(var i =0; i<node.children.length; i++){
 			child = node.children[i]
 			if(w>h){
-				var sub_width = child.value/node.value * (w-(num+1)*rect_pad)
+				var sub_width = (child.value/node.value) * (w-(num+1)*rect_pad)
 				var sub_height = (h-2*rect_pad)
 
 				construct_tree(child, sub_x, sub_y, sub_width, sub_height)
@@ -149,7 +149,9 @@ function construct_tree(node, x, y, w, h){
 			}
 			else{
 				var sub_width =  (w-2*rect_pad)
-				var sub_height =  child.value/node.value * (h-(num+1)*rect_pad)
+			//	console.log('ratio:',child.value/node.value)
+			//	console.log('whole:',(h-(num+1)*rect_pad))
+				var sub_height =  (child.value/node.value) * (h-(num+1)*rect_pad)
 				
 				construct_tree(child, sub_x, sub_y, sub_width, sub_height)
 	
