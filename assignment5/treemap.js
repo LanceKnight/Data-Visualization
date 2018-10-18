@@ -23,8 +23,26 @@ function preprocess_tree(node, concat_names, depth)  {
 }
 
 function plot_it()  {
+
+	test_data = {name:'test1',children:[
+										{name:'test11',children:[
+																{name:'test111',value:3},
+																{name:'test112',value:2},
+																{name:'test113',value:1}
+																]
+										},
+										{name:'test12',children:[
+																{name:'test121',value:2},
+																{name:'test122',value:1}
+																]
+										}
+									   ]
+	}
+	data = test_data	
 	// preprocess the tree
-	preprocess_tree(flare_data, '', 0);
+	preprocess_tree(data, '', 0);
+
+	get_value(data)
 
 	// setup svg element
 	var width = 750, height = 750;
@@ -36,23 +54,6 @@ function plot_it()  {
 	d3.selectAll('svg').append('g').attr('width',actual_width).attr('height',actual_height).attr('transform','translate('+pad+','+pad+')').attr('id','plot')
 
 	// do treemap!
-	test_data = {name:'test1',depth:1,children:[
-												{name:'test11',depth:2,children:[
-																				{name:'test111',depth:3,children:[]},
-																				{name:'test112',depth:3,children:[]},
-																				{name:'test113',depth:3,children:[]}
-																				]
-												},
-												{name:'test12',depth:2,children:[
-																				{name:'test121',depth:3,children:[]},
-																				{name:'test122',depth:3,children:[]}
-																				]
-												}
-											   ]
-	}
-	data = test_data	
-
-	get_value(flare_data)
 
 	construct_tree(data, 0, 0, actual_width, actual_height)
 
@@ -86,15 +87,17 @@ function plot_it()  {
 }
 
 function get_value(node){
-	var sum = 0
-	console.log('name: ', node.name)
+	//console.log('name: ', node.name)
 	if(node.is_leaf == false){
+		var sum = 0
 		for(var i =0;i<node.children.length;i++){
-			console.log('i:',i)	
+			//console.log('i:',i)	
 			value = get_value(node.children[i])
-			console.log('value:',value)
+			//console.log('value:',value)
 			sum +=value
 		}
+		//console.log('sum:',sum)	
+		node['value'] = sum
 		return sum
 	}
 	else{
@@ -130,10 +133,15 @@ function construct_tree(node, x, y, w, h){
 		var rect_pad = d3.min([w,h])*	global_cushion_scale
 		sub_x = x+rect_pad
 		sub_y = y+rect_pad
-		var sub_width = (w-(num+1)*rect_pad)/num
-		var sub_height = (h-2*rect_pad)
-
-		for(i =0; i<node.children.length; i++){
+		if(w>h){
+			var sub_width = (w-(num+1)*rect_pad)/num
+			var sub_height = (h-2*rect_pad)
+		}
+		else{
+			var sub_width =  (w-2*rect_pad) 
+			var sub_height =(h-(num+1)*rect_pad)/num
+		}
+		for(var i =0; i<node.children.length; i++){
 			construct_tree(node.children[i], sub_x, sub_y, sub_width, sub_height)
 		}
 	
