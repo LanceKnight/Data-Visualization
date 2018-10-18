@@ -1,8 +1,10 @@
-var global_cushion_scale = 0.03; 
+var global_cushion_scale = 0.00; 
 count = 0
+error = false
+scale_step = 0.01
 // compute depths, concatenate package names, leaf determination, accumulate sizes...
 function preprocess_tree(node, concat_names, depth)  {
-	node.full_name = depth==0 ? node.name : concat_names+'.'+node.name;
+	node.full_name = depth==0 ? node.name : concat_names+'-'+node.name;
 	node.depth = depth+1;
 	if(node.depth == 1)
 		node.box = {ll:[0,0], ur:[1,1]};
@@ -39,7 +41,7 @@ function plot_it()  {
 									   ]
 	}
 	data = flare_data
-//	data = test_data	
+	//data = test_data	
 	// preprocess the tree
 	preprocess_tree(data, '', 0);
 
@@ -76,11 +78,27 @@ function plot_it()  {
 										console.log('zoomed:',direction)
 
 										if(direction>0){
-												if(global_cushion_scale<1)
-													global_cushion_scale+=0.1
-												update_tree(test_data.children, 0,0, actual_width, actual_height)	
+												if(global_cushion_scale<0.5-scale_step)
+													global_cushion_scale+=scale_step
+											
+												console.log('scale:',global_cushion_scale)	
+												construct_tree(data, 0, 0, actual_width, actual_height)
+
+												update_tree(data.children)	
 													
 
+										}
+										else{
+
+												if(global_cushion_scale>=scale_step)
+													global_cushion_scale-=scale_step
+												else
+													global_cushion_scale=0
+												console.log('scale:',global_cushion_scale)	
+												construct_tree(data, 0, 0, actual_width, actual_height)
+
+												update_tree(data.children)	
+													
 										}	
 
 	})
@@ -109,7 +127,7 @@ function get_value(node){
 
 function draw_tree(node_array){
 	d3.select('#plot').selectAll('x').data(node_array).enter().append('rect')			
-													.attr('opacity',0.3)
+													.attr('class', d=>d.parent.full_name)
 													.attr('fill','white')
 													.attr('stroke', 'black')
 													.attr('x', d=>d.x)	
@@ -125,6 +143,25 @@ function draw_tree(node_array){
 
 }
 
+function update_tree(node_array){
+	//console.log(node_array)
+	//console.log('class:','.'+node_array[0].parent.full_name)
+	d3.select('#plot').selectAll('.'+node_array[0].parent.full_name).data(node_array)			
+													.attr('opacity',0.3)
+													.attr('fill','white')
+													.attr('stroke', 'black')
+													.attr('x', d=>d.x)	
+													.attr('y', d=>d.y)
+													.attr('width', d=>d.w)
+													.attr('height', d=>d.h)
+													.each(function(d){
+														if(d.children.length>0){
+
+															update_tree(d.children);
+														}
+													})
+
+}
 function construct_tree(node, x, y, w, h){
 	node['x'] = x
 	node['y'] = y
