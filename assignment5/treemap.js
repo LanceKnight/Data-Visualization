@@ -38,6 +38,7 @@ function plot_it()  {
 										}
 									   ]
 	}
+	data = flare_data
 	data = test_data	
 	// preprocess the tree
 	preprocess_tree(data, '', 0);
@@ -68,7 +69,7 @@ function plot_it()  {
 																																
 
 
-	draw_tree(test_data.children,0,0, actual_width, actual_height)
+	draw_tree(data.children,0,0, actual_width, actual_height)
 
 	d3.select('svg').on('wheel', function(){
 										direction = d3.event.wheelDelta
@@ -107,7 +108,10 @@ function get_value(node){
 
 
 function draw_tree(node_array){
-	d3.select('svg').selectAll('x').data(node_array).append('rect')
+	d3.select('#plot').selectAll('x').data(node_array).enter().append('rect')			
+													.attr('opacity',0.3)
+													.attr('fill','white')
+													.attr('stroke', 'black')
 													.attr('x', d=>d.x)	
 													.attr('y', d=>d.y)
 													.attr('width', d=>d.w)
@@ -130,19 +134,28 @@ function construct_tree(node, x, y, w, h){
 	
 	if(node.children.length >0){
 		num = node.children.length
-		var rect_pad = d3.min([w,h])*	global_cushion_scale
-		sub_x = x+rect_pad
-		sub_y = y+rect_pad
-		if(w>h){
-			var sub_width = (w-(num+1)*rect_pad)/num
-			var sub_height = (h-2*rect_pad)
-		}
-		else{
-			var sub_width =  (w-2*rect_pad) 
-			var sub_height =(h-(num+1)*rect_pad)/num
-		}
+		var rect_pad = d3.min([w,h]) * global_cushion_scale
+		var sub_x = x+rect_pad
+		var sub_y = y+rect_pad
 		for(var i =0; i<node.children.length; i++){
-			construct_tree(node.children[i], sub_x, sub_y, sub_width, sub_height)
+			child = node.children[i]
+			if(w>h){
+				var sub_width = child.value/node.value * (w-(num+1)*rect_pad)
+				var sub_height = (h-2*rect_pad)
+
+				construct_tree(child, sub_x, sub_y, sub_width, sub_height)
+				
+				sub_x += (sub_width+rect_pad)
+			}
+			else{
+				var sub_width =  (w-2*rect_pad)
+				var sub_height =  child.value/node.value * (h-(num+1)*rect_pad)
+				
+				construct_tree(child, sub_x, sub_y, sub_width, sub_height)
+	
+				sub_y +=(sub_height+ rect_pad)
+			}
+
 		}
 	
 	}
