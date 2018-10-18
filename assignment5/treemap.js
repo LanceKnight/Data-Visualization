@@ -117,14 +117,52 @@ function plot_it()  {
 				console.log(array)
 				d3.selectAll('text').data(array, d=>d.name)
 									.attr('opacity', d=>d.depth*text_opacity)
+
+											//	.attr('opacity', 0)
+												.text(d=>d.name)
+												.attr('x', d=>d.x+d.w/2)
+												.attr('y', d=>d.y+d.h/2)
+												.attr('style', d=>'font-size:'+1/d.depth * font_factor+"px")
+												.attr('text-anchor','middle')
+												.attr('alignment-baseline','centeral')
+
+
 									.exit()
-									.attr('opacity',0)
+									.attr('x',0)
+									.attr('y',0)	
 
 
 	}).on('mouseout',function(){
 		d3.selectAll('text').attr('opacity',0)
 	})
+	
+	d3.selectAll('text').on('mouseover', function(d){
+				console.log(d)
+				array = []
+				get_parent(d, array)
+				console.log(array)
+				d3.selectAll('text').data(array, d=>d.name)
+									.attr('opacity', d=>d.depth*text_opacity)
 
+											//	.attr('opacity', 0)
+												.text(d=>d.name)
+												.attr('x', d=>d.x+d.w/2)
+												.attr('y', d=>d.y+d.h/2)
+												.attr('style', d=>'font-size:'+1/d.depth * font_factor+"px")
+												.attr('text-anchor','middle')
+												.attr('alignment-baseline','centeral')
+
+
+									.exit()
+									.attr('x',0)
+									.attr('y',0)	
+
+
+	}).on('mouseout',function(){
+		d3.selectAll('text').attr('opacity',0)
+	})
+	
+	
 
 }
 
@@ -176,13 +214,13 @@ function draw_tree(node_array){
 													})
 
 	d3.select('#plot').selectAll('x').data(node_array, d=>d.name).enter().append('text')
-													.attr('opacity', 0)
-													.text(d=>d.name)
-													.attr('x', d=>d.x+d.w/2)
-													.attr('y', d=>d.y+d.h/2)
-													.attr('style', d=>'font-size:'+1/d.depth * font_factor+"px")
-													.attr('text-anchor','middle')
-													.attr('alignment-baseline','centeral')
+//													.attr('opacity', 0)
+//													.text(d=>d.name)
+//													.attr('x', d=>d.x+d.w/2)
+//													.attr('y', d=>d.y+d.h/2)
+//													.attr('style', d=>'font-size:'+1/d.depth * font_factor+"px")
+//													.attr('text-anchor','middle')
+//													.attr('alignment-baseline','centeral')
 
 }
 
