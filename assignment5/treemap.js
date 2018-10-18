@@ -41,7 +41,7 @@ function plot_it()  {
 									   ]
 	}
 	data = flare_data
-	//data = test_data	
+	data = test_data	
 	// preprocess the tree
 	preprocess_tree(data, '', 0);
 
@@ -68,7 +68,7 @@ function plot_it()  {
 															.attr('y',d=>d.y)
 															.attr('width', d=>d.w)
 															.attr('height', d=>d.h)
-																																
+															.attr('id',d=>d.name)																	
 
 
 	draw_tree(data.children,0,0, actual_width, actual_height)
@@ -77,7 +77,7 @@ function plot_it()  {
 										direction = d3.event.wheelDelta
 										console.log('zoomed:',direction)
 
-										if(direction>0){
+										if(direction<0){
 												if(global_cushion_scale<0.5-scale_step)
 													global_cushion_scale+=scale_step
 											
@@ -102,8 +102,31 @@ function plot_it()  {
 										}	
 
 	})
+//	d3.select('svg').append('rect').attr('fill','white').attr('text-anchor', 'middle').text('test').attr('x',0).attr('y',0).attr('width',100).attr('height',100).attr('stroke','black')
+	d3.selectAll('rect').on('mouseover', function(){
+												d3.select('#plot').append('text')
+																.text('test')
+																.attr('text-anchor','middle')
+																.attr('style','font-size:12px')
+																.attr('x', d3.sum([this.getAttribute('x'),this.getAttribute('width')/2]))
+																.attr('y', d3.sum([this.getAttribute('y'),this.getAttribute('height')/2]))
+																.text(this.getAttribute('id'))
+
+
+
+	}).on('mouseout',function(){
+						d3.selectAll('text').remove()
+
+	})
+
 
 }
+
+function label(element){
+
+
+}
+
 
 function get_value(node){
 	//console.log('name: ', node.name)
@@ -128,6 +151,8 @@ function get_value(node){
 function draw_tree(node_array){
 	d3.select('#plot').selectAll('x').data(node_array).enter().append('rect')			
 													.attr('class', d=>d.parent.full_name)
+													.attr('id', d=>d.name)
+													.attr('opacity', 0.3)
 													.attr('fill','white')
 													.attr('stroke', 'black')
 													.attr('x', d=>d.x)	
@@ -140,6 +165,8 @@ function draw_tree(node_array){
 															draw_tree(d.children);
 														}
 													})
+
+	
 
 }
 
