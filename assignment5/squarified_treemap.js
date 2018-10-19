@@ -29,9 +29,9 @@ function plot_it()  {
 
 	test_data = {name:'test1',children:[
 										{name:'test11',children:[
-																{name:'test111',value:3},
-																{name:'test112',value:2},
-																{name:'test113',value:1}
+																{name:'test111',value:2},
+																{name:'test112',value:1},
+																{name:'test113',value:3}
 																]
 										},
 										{name:'test12',children:[
@@ -48,6 +48,7 @@ function plot_it()  {
 
 	get_value(data)
 
+	sort_data(data)
 	// setup svg element
 	var width = 750, height = 750;
 	var pad = 80;
@@ -111,10 +112,10 @@ function plot_it()  {
 	})
 //	d3.select('svg').append('rect').attr('fill','white').attr('text-anchor', 'middle').text('test').attr('x',0).attr('y',0).attr('width',100).attr('height',100).attr('stroke','black')
 	d3.selectAll('rect').on('mouseover', function(d){
-//				console.log(d)
+				//console.log(d)
 				array = []
 				get_parent(d, array)
-//				console.log(array)
+				//console.log(array)
 				d3.selectAll('text').data(array, d=>d.name)
 									.attr('opacity', d=>d.depth*text_opacity)
 
@@ -171,6 +172,30 @@ function get_parent(node, array){
 	if(node.parent != undefined){
 		get_parent(node.parent, array)
 	}
+
+}
+
+function sort_data(node){
+	if(node.children.length>0){
+		var new_array = node.children.sort(compare)
+		node.children = new_array
+		
+		for(var i = 0;i<node.children.length; i++){
+			sort_data(node.children[i])
+
+		}
+	}
+
+}
+
+function compare(a, b){
+	if(a.value>b.value)
+		return -1
+	else if(a.value<b.value)
+		return 1
+	else
+		return 0
+
 
 }
 
@@ -249,6 +274,37 @@ function update_tree(node_array){
 													.attr('y', d=>d.y+d.h/2)
 
 }
+
+function squarify(child_array, parent, x, y, w, h, direction, rect_pad){
+	child_position_array = []
+	child = child_array.shift()
+	rem_x = x
+	rem_y = w
+	rem_w = w
+	rem_h = h
+
+	if(direction = 0){
+
+		if(w>h){
+			x = rem_x
+			y = rem_y 
+			sub_width = (child.value/parent.value) * (w-(num+1)*rect_pad)
+			sub_height = (h-2*rect_pad)
+
+		}
+		else{
+
+		}
+
+	}
+	else if(direction = 1){//
+		
+
+	}
+
+
+}
+
 function construct_tree(node, x, y, w, h){
 	node['x'] = x
 	node['y'] = y
