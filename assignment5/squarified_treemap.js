@@ -55,10 +55,15 @@ function plot_it()  {
 	
 	actual_width = width -2*pad, actual_height = actual_width;
 
+	pix_geo = d3.scaleLinear().domain([0, actual_width]).range([0, Math.sqrt(data.value)])
+	geo_pix = d3.scaleLinear().domain([0, Math.sqrt(data.value)]).range([0, actual_width])
+
 	d3.select('body').append('svg').attr('width',width).attr('height',height);
 	d3.selectAll('svg').append('g').attr('width',actual_width).attr('height',actual_height).attr('transform','translate('+pad+','+pad+')').attr('id','plot')
 
 	// do treemap!
+
+	squarify(data.children, [], pix_geo(actual_width), 0, 0, pix_geo(width), pix_geo(height), 0)
 
 	construct_tree(data, 0, 0, actual_width, actual_height)
 
@@ -166,6 +171,7 @@ function plot_it()  {
 	
 
 }
+
 
 function get_parent(node, array){
 	array.push(node)
@@ -275,32 +281,98 @@ function update_tree(node_array){
 
 }
 
-function squarify(child_array, parent, x, y, w, h, direction, rect_pad){
-	child_position_array = []
-	child = child_array.shift()
-	rem_x = x
-	rem_y = w
-	rem_w = w
-	rem_h = h
+function squarify(child_array, row, w, x, y, width, height, rect_pad){
+	console.log('\n')
+	if(child_array.length>0){
+		child_position_array = []
+		child = child_array[0]
 
-	if(direction = 0){
+//
+		console.log(child)
+		a = worst(row,w);
+		console.log('worst(row,w)',a)
+		b = row.concat([child])
+		console.log('b:')
+		console.log(b)
+		console.log('worst(row.concat([child]),w)', worst(b,w))
 
-		if(w>h){
-			x = rem_x
-			y = rem_y 
-			sub_width = (child.value/parent.value) * (w-(num+1)*rect_pad)
-			sub_height = (h-2*rect_pad)
-
+		console.log('child value:', child.value)
+		console.log('row.concat([child]):',row.concat([child]))
+		console.log('worst(row.concat([child]),w)',worst(row.concat([child]),w))	
+		if(worst(row,w)<=worst(row.concat([child]),w)){
+			console.log('route1')
+			child_array.shift()
+			squarify(child_array, row.concat([child]),w, x,y,width, height, rect_pad)
 		}
 		else{
+			console.log('route2')
+			var [x, y, width] = layoutrow(row, w, x, y, width, height)
+			squarify(child_array, [], width, x, y, width, height, rect_pad)
 
 		}
-
 	}
-	else if(direction = 1){//
+
+
+
+}
+
+/*
+function layoutrow(row, w, x, y, width, height){
+
+	console.log('layoutrow')
+}
+*/
+
+function layoutrow(row, w, x, y, width, height){
+	var s = 0
+	for(var i = 0; i < row.length; i++){
+		s += row.value;
+	}
+	var sub_x = x
+	var sub_y = y	
+	h = s/w
+	for(var i = 0; i<row.length; i++){
 		
-
+		w_sub = row.value/h
+		if(w == width){
+			row.h = h
+			row.w = w_sub
+			row.x = sub_x
+			row.y = sub_y
+			sub_x +=w_sub
+		}
+		else{
+			row.h = w_sub
+			row.w = h
+			row.x = sub_x
+			row.y = sub_y
+			sub_y +=w_sub
+		}	
 	}
+	if(w==width){
+		return x, y-h,d3.min([width, height-h])
+	}else{
+		return x-h, y, d3.min([width-h,height])
+	}	
+}
+
+function worst(row, w){
+	var row_array = []
+	for(var i =0; i<row.length; i++){
+		row_array.push(row.value)
+	}
+	console.log('row_array:')
+	console.log(row_array)
+	min_r = d3.min(row)
+	max_r = d3.max(row)
+	s = d3.sum(row)
+	return d3.max([(w^2*max_r)/(s^2),(s^2)/(w^2*min_r)])
+
+}
+
+
+function get_ratio(node){
+	return d3.max([node.w/node.h, node.h/node.w])
 
 
 }
