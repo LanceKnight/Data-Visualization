@@ -62,10 +62,12 @@ function plot_it()  {
 	d3.selectAll('svg').append('g').attr('width',actual_width).attr('height',actual_height).attr('transform','translate('+pad+','+pad+')').attr('id','plot')
 
 	// do treemap!
-
-	squarify(data.children, [], pix_geo(actual_width), 0, 0, pix_geo(width), pix_geo(height), 0)
+	console.log(data)
 
 	construct_tree(data, 0, 0, actual_width, actual_height)
+
+
+	get_squarified_tree(data, 0)
 
 	d3.selectAll('#plot').selectAll('x').data([data]).enter().append('rect')	
 															.attr('opacity',0.3)
@@ -281,6 +283,23 @@ function update_tree(node_array){
 
 }
 
+function get_squarified_tree(node,rect_pad){
+	console.log(node.w)
+	w = pix_geo(d3.min([node.w, node.h]))
+	row = []
+	console.log('w:',w)
+	if(node.children.length>0){
+		node.children = squarify(node.children, row, w, node.x, node.y, pix_geo(node.w), pix_geo(node.h), rect_pad)
+		for(var i = 0; i<node.children.length;i++){
+			get_squarified_tree(node.children[i], rect_pad)
+
+		}
+
+
+	}
+
+}
+
 function squarify(child_array, row, w, x, y, width, height, rect_pad){
 	console.log('\n')
 	if(child_array.length>0){
@@ -294,11 +313,11 @@ function squarify(child_array, row, w, x, y, width, height, rect_pad){
 		b = row.concat([child])
 		console.log('b:')
 		console.log(b)
-		console.log('worst(row.concat([child]),w)', worst(b,w))
+		console.log('worst(row.concat([child]),'+w+')', worst(b,w))
 
-		console.log('child value:', child.value)
-		console.log('row.concat([child]):',row.concat([child]))
-		console.log('worst(row.concat([child]),w)',worst(row.concat([child]),w))	
+//		console.log('child value:', child.value)
+//		console.log('row.concat([child]):',row.concat([child]))
+//		console.log('worst(row.concat([child]),w)',worst(row.concat([child]),w))	
 		if(worst(row,w)<=worst(row.concat([child]),w)){
 			console.log('route1')
 			child_array.shift()
@@ -310,6 +329,11 @@ function squarify(child_array, row, w, x, y, width, height, rect_pad){
 			squarify(child_array, [], width, x, y, width, height, rect_pad)
 
 		}
+	}else{
+		console.log('route3')
+		layoutrow(row, w, x, y, width, height)
+		console.log(row)
+		return row
 	}
 
 
@@ -323,30 +347,30 @@ function layoutrow(row, w, x, y, width, height){
 }
 */
 
-function layoutrow(row, w, x, y, width, height){
+function layoutrow(row_array, w, x, y, width, height){
 	var s = 0
-	for(var i = 0; i < row.length; i++){
-		s += row.value;
+	for(var i = 0; i < row_array.length; i++){
+		s += row_array[i].value;
 	}
 	var sub_x = x
 	var sub_y = y	
 	h = s/w
-	for(var i = 0; i<row.length; i++){
-		
+	for(var i = 0; i<row_array.length; i++){
+		row = row_array[i]
 		w_sub = row.value/h
 		if(w == width){
-			row.h = h
-			row.w = w_sub
-			row.x = sub_x
-			row.y = sub_y
-			sub_x +=w_sub
+			row.h = geo_pix(h)
+			row.w = geo_pix(w_sub)
+			row.x = geo_pix(sub_x)
+			row.y = geo_pix(sub_y)
+			sub_x +=geo_pix(w_sub)
 		}
 		else{
-			row.h = w_sub
-			row.w = h
-			row.x = sub_x
-			row.y = sub_y
-			sub_y +=w_sub
+			row.h = geo_pix(w_sub)
+			row.w = geo_pix(h)
+			row.x = geo_pix(sub_x)
+			row.y = geo_pix(sub_y)
+			sub_y +=geo_pix(w_sub)
 		}	
 	}
 	if(w==width){
@@ -357,16 +381,20 @@ function layoutrow(row, w, x, y, width, height){
 }
 
 function worst(row, w){
+	if(row.length ==0)
+		return 1
 	var row_array = []
 	for(var i =0; i<row.length; i++){
-		row_array.push(row.value)
+		row_array.push(row[i].value)
 	}
 	console.log('row_array:')
 	console.log(row_array)
-	min_r = d3.min(row)
-	max_r = d3.max(row)
-	s = d3.sum(row)
-	return d3.max([(w^2*max_r)/(s^2),(s^2)/(w^2*min_r)])
+	min_r = d3.min(row_array)
+	max_r = d3.max(row_array)
+	s = d3.sum(row_array)
+	//console.log('w:'+w+' min_r:', min_r,' max_r:',max_r, ' s:',s)
+	//console.log('term:'+Math.pow(w,2))
+	return d3.max([((Math.pow(w,2))*max_r)/(Math.pow(s,2)),(Math.pow(s,2))/(Math.pow(w,2)*min_r)])
 
 }
 
