@@ -290,6 +290,7 @@ function get_squarified_tree(node,rect_pad){
 	console.log('w:',w)
 	if(node.children.length>0){
 		node.children = squarify(node.children, row, w, node.x, node.y, pix_geo(node.w), pix_geo(node.h), rect_pad)
+		
 		for(var i = 0; i<node.children.length;i++){
 			get_squarified_tree(node.children[i], rect_pad)
 
@@ -305,12 +306,12 @@ function squarify(child_array, row, w, x, y, width, height, rect_pad){
 	if(child_array.length>0){
 		child_position_array = []
 		child = child_array[0]
-
+		
 //
 		console.log(child)
 		a = worst(row,w);
 		console.log('worst(row,w)',a)
-		b = row.concat([child])
+		b = row.concat(child)
 		console.log('b:')
 		console.log(b)
 		console.log('worst(row.concat([child]),'+w+')', worst(b,w))
@@ -321,7 +322,8 @@ function squarify(child_array, row, w, x, y, width, height, rect_pad){
 		if(worst(row,w)<=worst(row.concat([child]),w)){
 			console.log('route1')
 			child_array.shift()
-			squarify(child_array, row.concat([child]),w, x,y,width, height, rect_pad)
+			row.push(child)
+			squarify(child_array, row,w, x,y,width, height, rect_pad)
 		}
 		else{
 			console.log('route2')
@@ -329,12 +331,11 @@ function squarify(child_array, row, w, x, y, width, height, rect_pad){
 			squarify(child_array, [], width, x, y, width, height, rect_pad)
 
 		}
-	}else{
-		console.log('route3')
-		layoutrow(row, w, x, y, width, height)
-		console.log(row)
-		return row
 	}
+
+	return row
+	
+	
 
 
 
@@ -348,6 +349,7 @@ function layoutrow(row, w, x, y, width, height){
 */
 
 function layoutrow(row_array, w, x, y, width, height){
+	console.log('layout')
 	var s = 0
 	for(var i = 0; i < row_array.length; i++){
 		s += row_array[i].value;
@@ -374,9 +376,9 @@ function layoutrow(row_array, w, x, y, width, height){
 		}	
 	}
 	if(w==width){
-		return x, y-h,d3.min([width, height-h])
+		return [x, y-h,d3.min([width, height-h])]
 	}else{
-		return x-h, y, d3.min([width-h,height])
+		return [x-h, y, d3.min([width-h,height])]
 	}	
 }
 
