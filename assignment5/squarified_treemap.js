@@ -42,7 +42,7 @@ function plot_it()  {
 									   ]
 	}
 	data = flare_data
-	//data = test_data	
+//	data = test_data	
 	// preprocess the tree
 	preprocess_tree(data, '', 0);
 
@@ -284,13 +284,15 @@ function update_tree(node_array){
 }
 
 function get_squarified_tree(node,rect_pad){
-	console.log(node.w)
+//	console.log(node.w)
 	w = pix_geo(d3.min([node.w, node.h]))
 	row = []
-	console.log('w:',w)
+	var children = []
+//	console.log('w:',w)
 	if(node.children.length>0){
-		node.children = squarify(node.children, row, w, node.x, node.y, pix_geo(node.w), pix_geo(node.h), rect_pad)
-		
+		squarify(node.children, row, w, node.x, node.y, pix_geo(node.w), pix_geo(node.h), children)
+//		console.log(children)
+		node.children = children	
 		for(var i = 0; i<node.children.length;i++){
 			get_squarified_tree(node.children[i], rect_pad)
 
@@ -301,40 +303,43 @@ function get_squarified_tree(node,rect_pad){
 
 }
 
-function squarify(child_array, row, w, x, y, width, height, rect_pad){
-	console.log('\n')
+function squarify(child_array, row, w, x, y, width, height, recorder){
+//	console.log('\n')
 	if(child_array.length>0){
 		child_position_array = []
 		child = child_array[0]
 		
 //
-		console.log(child)
+//		console.log(child)
 		a = worst(row,w);
-		console.log('worst(row,w)',a)
+//		console.log('worst(row,w)',a)
 		b = row.concat(child)
-		console.log('b:')
-		console.log(b)
-		console.log('worst(row.concat([child]),'+w+')', worst(b,w))
+	//	console.log('b:')
+	//	console.log(b)
+//		console.log('worst(row.concat([child]),'+w+')', worst(b,w))
 
 //		console.log('child value:', child.value)
 //		console.log('row.concat([child]):',row.concat([child]))
 //		console.log('worst(row.concat([child]),w)',worst(row.concat([child]),w))	
-		if(worst(row,w)<=worst(row.concat([child]),w)){
-			console.log('route1')
+		if(worst(row,w)>worst(row.concat([child]),w)){
+//			console.log('route1')
 			child_array.shift()
 			row.push(child)
-			squarify(child_array, row,w, x,y,width, height, rect_pad)
+			recorder.push(child)
+			return squarify(child_array, row,w, x,y,width, height, recorder)
 		}
 		else{
-			console.log('route2')
-			var [x, y, width] = layoutrow(row, w, x, y, width, height)
-			squarify(child_array, [], width, x, y, width, height, rect_pad)
+//			console.log('route2')
+			var [x, y, width, height] = layoutrow(row, w, x, y, width, height)
+		//	console.log('later w:',w)
+			return squarify(child_array, [], d3.min([width, height]), x, y, width, height, recorder)
 
 		}
+	}else{
+		
+			var [x, y, width, height] = layoutrow(row, w, x, y, width, height)
+		return recorder
 	}
-
-	return row
-	
 	
 
 
@@ -349,48 +354,68 @@ function layoutrow(row, w, x, y, width, height){
 */
 
 function layoutrow(row_array, w, x, y, width, height){
-	console.log('layout')
+//	console.log('layout, row_array:')
+//	console.log(row_array)
 	var s = 0
 	for(var i = 0; i < row_array.length; i++){
 		s += row_array[i].value;
-	}
+	}i
+//	console.log('x:',x)
+//	console.log('y:',y)
 	var sub_x = x
-	var sub_y = y	
+	var sub_y = y
+//	console.log('s:',s)	
 	h = s/w
+//	console.log('h:',h)
+//	console.log('w:',w)
+//	console.log('width',width)
+//	console.log('height:',height)
 	for(var i = 0; i<row_array.length; i++){
 		row = row_array[i]
 		w_sub = row.value/h
 		if(w == width){
+//			console.log('w== widdth')
+			
+
 			row.h = geo_pix(h)
 			row.w = geo_pix(w_sub)
-			row.x = geo_pix(sub_x)
-			row.y = geo_pix(sub_y)
+			row.x = sub_x
+			row.y = sub_y
 			sub_x +=geo_pix(w_sub)
+//			console.log(row)
+//			console.log()	
 		}
 		else{
+
+//			console.log('w!=width')	
+
+
 			row.h = geo_pix(w_sub)
 			row.w = geo_pix(h)
-			row.x = geo_pix(sub_x)
-			row.y = geo_pix(sub_y)
+			row.x = sub_x
+			row.y = sub_y
 			sub_y +=geo_pix(w_sub)
+
+
 		}	
 	}
+//	console.log('height:',height)
 	if(w==width){
-		return [x, y-h,d3.min([width, height-h])]
+		return [x, y+geo_pix(h), width, height - h]
 	}else{
-		return [x-h, y, d3.min([width-h,height])]
+		return [x+geo_pix(h), y, width-h, height]
 	}	
 }
 
 function worst(row, w){
 	if(row.length ==0)
-		return 1
+		return 999
 	var row_array = []
 	for(var i =0; i<row.length; i++){
 		row_array.push(row[i].value)
 	}
-	console.log('row_array:')
-	console.log(row_array)
+//	console.log('row_array:')
+//	console.log(row_array)
 	min_r = d3.min(row_array)
 	max_r = d3.max(row_array)
 	s = d3.sum(row_array)
