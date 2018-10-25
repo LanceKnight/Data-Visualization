@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<title>D3 Scales Example 5</title>
+		<script type='text/javascript' src='d3.js'></script>
+	</head>
+		<svg id='svg' width='500' height='500'>
+		</svg>
+			<script type='text/javascript'>
+			{
+				var rect_floor = 450
+				var width=d3.select('#svg').attr('width')
+
+				var bar_data = [];
+				var n_bars = 20;
+				var num_groups = 4;
+				var group_colors = [];
+				for(var i = 0; i < num_groups; i++)  {
+					var bar_group = [];
+					for(var j = 0; j < n_bars; j++)
+						bar_group.push(rect_floor/20+(rect_floor-rect_floor/20)*Math.random());
+					bar_data.push(bar_group);
+
+					var h = 360.0*(0.5/num_groups+i/(num_groups+1)), s = 0.4, l = 0.8;
+					group_colors.push(d3.hsl(h,s,l).toString());
+				}
+
+				var bar_group_array = [];
+				for(var i = 0; i < num_groups; i++)
+					bar_group_array.push(i);
+				var bar_scale_group = d3.scaleBand().domain(bar_group_array).range([0,width])
+				bar_scale_group.paddingInner(0.05)
+
+				var bar_x_array = [];
+				for(var i = 0; i < n_bars; i++)
+					bar_x_array.push(i);
+				var bar_scale_x = d3.scaleBand().domain(bar_x_array).range([0,bar_scale_group.bandwidth()])
+				bar_scale_x.paddingInner(0.2)
+
+				var bar_selection = d3.select('#svg').selectAll('g').data(bar_data).enter().append('g')
+
+				d3.selectAll('g').attr('transform', (d,i) => 'translate('+bar_scale_group(i)+',0)')
+				d3.selectAll('g').append('rect')
+					.attr('x', 0).attr('width', bar_scale_group.bandwidth()).attr('y', '0').attr('height', rect_floor)
+					.attr('fill', (d,i) => group_colors[i])
+
+				bar_selection.selectAll('newrects').data(function(d)  { return d; }).enter().append('rect')
+					.attr('class', 'barrect')
+
+				d3.selectAll('g').selectAll('.barrect')
+					.attr('x', (d,i) => bar_scale_x(i)).attr('width', bar_scale_x.bandwidth()).attr('y', d => rect_floor-d).attr('height', d => d)
+					.attr('fill', '#444444')
+			}
+			</script>
+	</body>
+</html>
